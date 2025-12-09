@@ -14,7 +14,7 @@ import MapLeaflet from '../../components/MapComponents/MapLeaflet.vue';
 
 <style scoped>
 h1 {
-    font-family: 'Albert Sans';
-    font-weight: 300 !important;
+    font-family: 'Montserrat';
+    font-weight: 400 !important;
 }
 </style>

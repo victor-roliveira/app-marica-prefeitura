@@ -9,7 +9,7 @@
         <!-- Modal -->
         <v-dialog v-model="dialog" max-width="500px">
             <v-card>
-                <v-card-title class="text-h6 font-weight-bold">
+                <v-card-title class="text-h6">
                     {{ projetoSelecionado?.titulo }}
                 </v-card-title>
 
@@ -23,7 +23,7 @@
 
                 <v-card-actions>
                     <v-spacer />
-                    <v-btn color="orange" variant="flat" @click="dialog = false">Fechar</v-btn>
+                    <v-btn class="text-white" color="orange" variant="flat" @click="dialog = false">Fechar</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -65,11 +65,34 @@ const projetos = ref([
         valor: "R$ 750.000.000,00",
         prazo: "36 meses",
         inicio: "Maio/2026",
-        lat: -22.9288,
-        lng: -42.8300,
+        lat: -22.9330,
+        lng: -42.9647,
     },
-    { id: 2, numero: 2, titulo: "13º Batalhão de Polícia Militar", executor: "SOMAR", conclusao: "Julho/2025", valor: "R$ 10.000.000,00", prazo: "12 meses", inicio: "Junho/2026", lat: -22.9175, lng: -42.8230 }, { id: 3, numero: 3, titulo: "Pórticos", executor: "SOMAR", conclusao: "Junho/2025", valor: "R$ 70.000.000,00", prazo: "18 meses", inicio: "Abril/2026", lat: -22.9600, lng: -42.7350 }
-]);
+    {
+        id: 2,
+        numero: 2,
+        titulo: "13º Batalhão de Polícia Militar",
+        executor: "SOMAR",
+        conclusao: "Julho/2025",
+        valor: "R$ 10.000.000,00",
+        prazo: "12 meses",
+        inicio: "Junho/2026",
+        lat: -22.9118,
+        lng: -42.8153
+    },
+    {
+        id: 3,
+        numero: 3,
+        titulo: "Pórticos",
+        executor: "SOMAR",
+        conclusao: "Junho/2025",
+        valor: "R$ 70.000.000,00",
+        prazo: "18 meses",
+        inicio: "Abril/2026",
+        lat: -22.9258,
+        lng: -42.7211
+    }
+])
 
 function getIcon(numero) {
     return L.divIcon({
@@ -103,5 +126,14 @@ function openProjeto(p) {
 .map-container {
     width: 100%;
     height: 100%;
+}
+
+.v-card {
+    font-family: 'Montserrat';
+}
+
+.v-card-title {
+    font-family: 'Montserrat' !important;
+    font-weight: 900 !important;
 }
 </style>

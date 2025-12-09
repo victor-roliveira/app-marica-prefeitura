@@ -13,17 +13,18 @@
         </div>
 
         <!-- Abas de navegação -->
-        <v-tabs
-          v-model="currentTab"
-          density="comfortable"
-          align-tabs="end"
-          style="max-width: 500px;"
-        >
+        <v-tabs v-model="currentTab" density="comfortable" align-tabs="end" class="flex-grow-1">
           <v-tab :value="'home'" @click="goTo('/')">
+            <v-icon start>mdi-home</v-icon>
             Página Principal
           </v-tab>
           <v-tab :value="'projetos'" @click="goTo('/projetos')">
+            <v-icon start>mdi-map-search</v-icon>
             Projetos (Mapa)
+          </v-tab>
+          <v-tab :value="'projetos'" @click="goTo('/acompanhamento')">
+            <v-icon start>mdi-chart-bell-curve-cumulative</v-icon>
+            Acompanhamento
           </v-tab>
         </v-tabs>
 
@@ -61,8 +62,13 @@ function goTo(path) {
 </script>
 
 <style scoped>
- span {
-  font-family: 'Albert Sans';
+span {
+  font-family: 'Montserrat';
   font-weight: 800 !important;
- }
+}
+
+.v-tabs {
+  font-family: 'Montserrat';
+  font-weight: 800 !important;
+}
 </style>
