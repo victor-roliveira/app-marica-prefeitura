@@ -3,13 +3,10 @@
     <!-- Barra de navegação -->
     <v-app-bar class="text-white" color="orange" elevation="4">
       <v-container class="d-flex align-center justify-space-between">
-
-        <!-- Logo / Título -->
+        <!-- Logo -->
         <div class="d-flex align-center">
           <!-- logo -->
-          <img src="./assets/logo-quanta.png" alt="Quanta" height="32" class="mr-4" />
-          <!-- Título -->
-          <span class="text-h6 font-weight-bold">Quanta Consultoria</span>
+          <img src="./assets/logo-quanta-oficial.png" alt="Quanta" height="32" class="mr-4" />
         </div>
 
         <!-- Abas de navegação -->
@@ -62,11 +59,6 @@ function goTo(path) {
 </script>
 
 <style scoped>
-span {
-  font-family: 'Montserrat';
-  font-weight: 800 !important;
-}
-
 .v-tabs {
   font-family: 'Montserrat';
   font-weight: 800 !important;

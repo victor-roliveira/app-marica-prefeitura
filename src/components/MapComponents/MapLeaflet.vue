@@ -2,9 +2,17 @@
     <div class="map-container">
         <LMap :zoom="zoom" :center="center" style="height: 85vh; width: 100%; border-radius: 12px;">
             <LTileLayer :url="tileLayer" />
-
+            <!-- Marcadores com tooltip -->
             <LMarker v-for="p in projetos" :key="p.id" :lat-lng="[p.lat, p.lng]" :icon="getIcon(p.numero)"
-                @click="openProjeto(p)" />
+                @click="openProjeto(p)">
+                <LTooltip :options="{ direction: 'top', offset: [0, -10], sticky: true }">
+                    <div style="font-size: 0.85rem;">
+                        <strong>{{ p.titulo }}</strong><br />
+                        Executor: {{ p.executor }}<br />
+                        Conclusão: {{ p.conclusao }}
+                    </div>
+                </LTooltip>
+            </LMarker>
         </LMap>
         <!-- Modal -->
         <v-dialog v-model="dialog" max-width="500px">
@@ -23,18 +31,22 @@
 
                 <v-card-actions>
                     <v-spacer />
-                    <v-btn class="text-white" color="orange" variant="flat" @click="dialog = false">Fechar</v-btn>
+                    <v-btn class="text-white" color="orange" variant="flat" @click="dialog = false">
+                        Fechar
+                    </v-btn>
                 </v-card-actions>
+
             </v-card>
         </v-dialog>
     </div>
 </template>
 
+
 <script setup>
 import { ref } from "vue";
 
 // IMPORTAÇÃO CORRETA DA BIBLIOTECA BOA
-import { LMap, LTileLayer, LMarker } from "@vue-leaflet/vue-leaflet";
+import { LMap, LTileLayer, LMarker, LTooltip } from "@vue-leaflet/vue-leaflet";
 
 // IMPORTANTE
 import "leaflet/dist/leaflet.css";
@@ -91,6 +103,18 @@ const projetos = ref([
         inicio: "Abril/2026",
         lat: -22.9258,
         lng: -42.7211
+    },
+    {
+        id: 4,
+        numero: 4,
+        titulo: "Reservatórios e Parques Inundáveis",
+        executor: "SANEMAR",
+        conclusao: "Julho/2025",
+        valor: "R$ 750.000.000,00",
+        prazo: "18 meses",
+        inicio: "Junho/2026",
+        lat: -22.8891,
+        lng: -42.8156
     }
 ])
 
