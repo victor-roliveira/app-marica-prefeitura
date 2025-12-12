@@ -1,6 +1,6 @@
 <template>
-    <v-container fluid class="py-6">
-        <h1 class="text-h4 font-weight-bold mb-6">
+    <v-container fluid>
+        <h1 class="mb-2">
             Projetos Concluídos e em Contratação - Maricá
         </h1>
 
@@ -16,5 +16,6 @@ import MapLeaflet from '../../components/MapComponents/MapLeaflet.vue';
 h1 {
     font-family: 'Montserrat';
     font-weight: 400 !important;
+    font-size: 15px;
 }
 </style>

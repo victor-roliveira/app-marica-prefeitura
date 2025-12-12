@@ -8,7 +8,6 @@
           <!-- logo -->
           <img src="./assets/logo-quanta-oficial.png" alt="Quanta" height="32" class="mr-4" />
         </div>
-
         <!-- Abas de navegação -->
         <v-tabs v-model="currentTab" density="comfortable" align-tabs="end" class="flex-grow-1">
           <v-tab :value="'home'" @click="goTo('/')">
@@ -24,10 +23,8 @@
             Acompanhamento
           </v-tab>
         </v-tabs>
-
       </v-container>
     </v-app-bar>
-
     <!-- Conteúdo principal -->
     <v-main>
       <router-view />
@@ -48,7 +45,7 @@ const currentTab = computed({
     if (route.name === 'projetos') return 'projetos'
     return 'home'
   },
-  set() { /* Vuetify exige setter, mas vamos navegar manualmente em goTo */ },
+  set() { },
 })
 
 function goTo(path) {

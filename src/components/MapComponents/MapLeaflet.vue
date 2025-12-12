@@ -6,7 +6,7 @@
             <LMarker v-for="p in projetos" :key="p.id" :lat-lng="[p.lat, p.lng]" :icon="getIcon(p.numero)"
                 @click="openProjeto(p)">
                 <LTooltip :options="{ direction: 'top', offset: [0, -10], sticky: true }">
-                    <div style="font-size: 0.85rem;">
+                    <div class="tooltip" style="font-size: 0.85rem;">
                         <strong>{{ p.titulo }}</strong><br />
                         Executor: {{ p.executor }}<br />
                         Conclusão: {{ p.conclusao }}
@@ -44,11 +44,8 @@
 
 <script setup>
 import { ref } from "vue";
-
-// IMPORTAÇÃO CORRETA DA BIBLIOTECA BOA
 import { LMap, LTileLayer, LMarker, LTooltip } from "@vue-leaflet/vue-leaflet";
 
-// IMPORTANTE
 import "leaflet/dist/leaflet.css";
 import * as L from "leaflet";
 
@@ -71,50 +68,98 @@ const projetos = ref([
     {
         id: 1,
         numero: 1,
-        titulo: "Mergulhão e Parque Linear de Inoã",
+        titulo: "Curva Di Branco",
+        executor: "SOMAR",
+        conclusao: "Agosto/2025",
+        valor: "R$ 10.000.000,00",
+        prazo: "12 meses",
+        inicio: "Junho/2026",
+        lat: -22.9390,
+        lng: -42.8296,
+    },
+    {
+        id: 2,
+        numero: 2,
+        titulo: "Câmara",
+        executor: "...",
+        conclusao: "...",
+        valor: "...",
+        prazo: "...",
+        inicio: "...",
+        lat: -22.9180,
+        lng: -42.8136
+    },
+    {
+        id: 3,
+        numero: 3,
+        titulo: "Rodoviária Antiga",
+        executor: "...",
+        conclusao: "...",
+        valor: "...",
+        prazo: "...",
+        inicio: "...",
+        lat: -22.9164,
+        lng: -42.8121
+    },
+    {
+        id: 4,
+        numero: 4,
+        titulo: "Rodoviária Nova",
+        executor: "...",
+        conclusao: "...",
+        valor: "R$ 750.000.000,00",
+        prazo: "...",
+        inicio: "...",
+        lat: -22.8976,
+        lng: -42.7826
+    }, 
+    {
+        id: 5,
+        numero: 5,
+        titulo: "Mergulhão e Parque Linear de INOÃ",
         executor: "SOMAR",
         conclusao: "Maio/2025",
         valor: "R$ 750.000.000,00",
         prazo: "36 meses",
         inicio: "Maio/2026",
-        lat: -22.9330,
-        lng: -42.9647,
+        lat: -22.9110,
+        lng: -42.9330
     },
     {
-        id: 2,
-        numero: 2,
-        titulo: "13º Batalhão de Polícia Militar",
-        executor: "SOMAR",
-        conclusao: "Julho/2025",
-        valor: "R$ 10.000.000,00",
-        prazo: "12 meses",
-        inicio: "Junho/2026",
-        lat: -22.9118,
-        lng: -42.8153
-    },
-    {
-        id: 3,
-        numero: 3,
+        id: 6,
+        numero: 6,
         titulo: "Pórticos",
         executor: "SOMAR",
         conclusao: "Junho/2025",
         valor: "R$ 70.000.000,00",
         prazo: "18 meses",
         inicio: "Abril/2026",
-        lat: -22.9258,
-        lng: -42.7211
+        lat: -22.8992,
+        lng: -42.9460
     },
     {
-        id: 4,
-        numero: 4,
-        titulo: "Reservatórios e Parques Inundáveis",
-        executor: "SANEMAR",
-        conclusao: "Julho/2025",
-        valor: "R$ 750.000.000,00",
+        id: 7,
+        numero: 7,
+        titulo: "Parque Inundável",
+        executor: "...",
+        conclusao: "...",
+        valor: "R$ ...",
         prazo: "18 meses",
-        inicio: "Junho/2026",
-        lat: -22.8891,
-        lng: -42.8156
+        inicio: "...",
+        lat: -22.9950,
+        lng: -42.8059
+    }, 
+    {
+        id: 8,
+        numero: 8,
+        titulo: "13° Batalhão de Polícia Militar",
+        executor: "SOMAR",
+        conclusao: "Julho/2025",
+        valor: "R$ 10.000.000,00",
+        prazo: "12 meses",
+        inicio: "Julho/2026",
+        lat: -22.9051,
+        lng: -42.8094
     }
 ])
 
@@ -122,8 +167,8 @@ function getIcon(numero) {
     return L.divIcon({
         html: `
       <div style="
-        width:32px;
-        height:32px;
+        width:18px;
+        height:18px;
         background:#ff5825;
         border-radius:50%;
         color:white;
@@ -159,5 +204,17 @@ function openProjeto(p) {
 .v-card-title {
     font-family: 'Montserrat' !important;
     font-weight: 900 !important;
+}
+
+.custom-marker {
+    font-family: 'Montserrat';
+}
+
+.tooltip {
+    font-family: 'Montserrat';
+}
+
+.leaflet-container  {
+    height: 600px !important;
 }
 </style>
