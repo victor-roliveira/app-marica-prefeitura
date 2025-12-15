@@ -206,7 +206,9 @@ function openProjeto(p) {
     width: 100%;
     max-width: 1600px;
     height: 70vh;
+    padding: 16px;
 }
+
 
 .map-responsive {
     width: 100%;
@@ -240,6 +242,15 @@ function openProjeto(p) {
 }
 
 @media (max-width: 768px) {
+    .map-container {
+        padding-top: 90px;
+        width: 800px;
+    }
+
+    .map-responsive {
+        border-radius: 5px;
+    }
+
     .map-responsive {
         transform: rotate(90deg);
         transform-origin: center center;
