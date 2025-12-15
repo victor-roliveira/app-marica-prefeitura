@@ -43,143 +43,41 @@
     </div>
 </template>
 
+
+
 <script setup>
 import { ref } from "vue";
 import { LMap, LTileLayer, LMarker, LTooltip } from "@vue-leaflet/vue-leaflet";
 import "leaflet/dist/leaflet.css";
 import * as L from "leaflet";
 
-/* =======================
-   MAP CONFIG
-======================= */
-
+/* MAP CONFIG */
 const center = ref([-22.9194, -42.8182]);
 const zoom = ref(10);
 
 const tileLayer =
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
-/* =======================
-   STATE
-======================= */
-
+/* STATE */
 const dialog = ref(false);
 const projetoSelecionado = ref(null);
 
-/* =======================
-   DATA
-======================= */
-
+/* DATA */
 const projetos = ref([
-    {
-        id: 1,
-        numero: 1,
-        titulo: "Curva Di Branco",
-        executor: "SOMAR",
-        conclusao: "Agosto/2025",
-        valor: "R$ 10.000.000,00",
-        prazo: "12 meses",
-        inicio: "Junho/2026",
-        lat: -22.9390,
-        lng: -42.8296,
-    },
-    {
-        id: 2,
-        numero: 2,
-        titulo: "Câmara",
-        executor: "...",
-        conclusao: "...",
-        valor: "...",
-        prazo: "...",
-        inicio: "...",
-        lat: -22.9180,
-        lng: -42.8136,
-    },
-    {
-        id: 3,
-        numero: 3,
-        titulo: "Rodoviária Antiga",
-        executor: "...",
-        conclusao: "...",
-        valor: "...",
-        prazo: "...",
-        inicio: "...",
-        lat: -22.9164,
-        lng: -42.8121,
-    },
-    {
-        id: 4,
-        numero: 4,
-        titulo: "Rodoviária Nova",
-        executor: "...",
-        conclusao: "...",
-        valor: "R$ 750.000.000,00",
-        prazo: "...",
-        inicio: "...",
-        lat: -22.8976,
-        lng: -42.7826,
-    },
-    {
-        id: 5,
-        numero: 5,
-        titulo: "Mergulhão e Parque Linear de INOÃ",
-        executor: "SOMAR",
-        conclusao: "Maio/2025",
-        valor: "R$ 750.000.000,00",
-        prazo: "36 meses",
-        inicio: "Maio/2026",
-        lat: -22.9110,
-        lng: -42.9330,
-    },
-    {
-        id: 6,
-        numero: 6,
-        titulo: "Pórticos",
-        executor: "SOMAR",
-        conclusao: "Junho/2025",
-        valor: "R$ 70.000.000,00",
-        prazo: "18 meses",
-        inicio: "Abril/2026",
-        lat: -22.8992,
-        lng: -42.9460,
-    },
-    {
-        id: 7,
-        numero: 7,
-        titulo: "Parque Inundável",
-        executor: "...",
-        conclusao: "...",
-        valor: "R$ ...",
-        prazo: "18 meses",
-        inicio: "...",
-        lat: -22.9950,
-        lng: -42.8059,
-    },
-    {
-        id: 8,
-        numero: 8,
-        titulo: "13° Batalhão de Polícia Militar",
-        executor: "SOMAR",
-        conclusao: "Julho/2025",
-        valor: "R$ 10.000.000,00",
-        prazo: "12 meses",
-        inicio: "Julho/2026",
-        lat: -22.9051,
-        lng: -42.8094,
-    },
+    { id: 1, numero: 1, titulo: "Curva Di Branco", executor: "SOMAR", conclusao: "Agosto/2025", valor: "R$ 10.000.000,00", prazo: "12 meses", inicio: "Junho/2026", lat: -22.9390, lng: -42.8296 },
+    { id: 2, numero: 2, titulo: "Câmara", executor: "...", conclusao: "...", valor: "...", prazo: "...", inicio: "...", lat: -22.9180, lng: -42.8136 },
+    { id: 3, numero: 3, titulo: "Rodoviária Antiga", executor: "...", conclusao: "...", valor: "...", prazo: "...", inicio: "...", lat: -22.9164, lng: -42.8121 },
+    { id: 4, numero: 4, titulo: "Rodoviária Nova", executor: "...", conclusao: "...", valor: "R$ 750.000.000,00", prazo: "...", inicio: "...", lat: -22.8976, lng: -42.7826 },
+    { id: 5, numero: 5, titulo: "Mergulhão e Parque Linear de INOÃ", executor: "SOMAR", conclusao: "Maio/2025", valor: "R$ 750.000.000,00", prazo: "36 meses", inicio: "Maio/2026", lat: -22.9110, lng: -42.9330 },
+    { id: 6, numero: 6, titulo: "Pórticos", executor: "SOMAR", conclusao: "Junho/2025", valor: "R$ 70.000.000,00", prazo: "18 meses", inicio: "Abril/2026", lat: -22.8992, lng: -42.9460 },
+    { id: 7, numero: 7, titulo: "Parque Inundável", executor: "...", conclusao: "...", valor: "R$ ...", prazo: "18 meses", inicio: "...", lat: -22.9950, lng: -42.8059 },
+    { id: 8, numero: 8, titulo: "13° Batalhão de Polícia Militar", executor: "SOMAR", conclusao: "Julho/2025", valor: "R$ 10.000.000,00", prazo: "12 meses", inicio: "Julho/2026", lat: -22.9051, lng: -42.8094 },
 ]);
 
-/* =======================
-   METHODS
-======================= */
-
+/* METHODS */
 function getIcon(numero) {
     return L.divIcon({
-        html: `
-      <div class="marker-badge">
-        ${numero}
-      </div>
-    `,
+        html: `<div class="marker-badge">${numero}</div>`,
         iconSize: [32, 32],
         className: "custom-marker",
     });
@@ -191,11 +89,10 @@ function openProjeto(p) {
 }
 </script>
 
-<style scoped>
-/* =======================
-   BASE
-======================= */
 
+
+<style scoped>
+/* BASE */
 .map-container {
     width: 100%;
     display: flex;
@@ -209,23 +106,19 @@ function openProjeto(p) {
     padding: 16px;
 }
 
-
 .map-responsive {
     width: 100%;
     height: 100%;
     border-radius: 12px;
 }
 
-/* Leaflet precisa de deep */
+/* Leaflet */
 :deep(.leaflet-container) {
     width: 100%;
     height: 100%;
 }
 
-/* =======================
-   MARKER BADGE (DESKTOP)
-======================= */
-
+/* MARKER */
 :deep(.marker-badge) {
     width: 18px;
     height: 18px;
@@ -238,29 +131,33 @@ function openProjeto(p) {
     font-weight: bold;
     border: 2px solid white;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-    transform: none;
 }
 
+/* =======================
+   MOBILE (FINAL E CORRETO)
+======================= */
 @media (max-width: 768px) {
-    .map-container {
-        padding-top: 90px;
-        width: 800px;
+
+    /* reduz espaço do título acima do mapa */
+    h1,
+    h2 {
+        margin-bottom: 8px;
+    }
+
+    /* mapa quase fullscreen */
+    .map-wrapper {
+        height: calc(100vh - 96px);
+        /* header + título */
+        padding: 0 0;
+        /* respiro lateral */
     }
 
     .map-responsive {
-        border-radius: 5px;
-    }
-
-    .map-responsive {
-        transform: rotate(90deg);
-        transform-origin: center center;
-    }
-
-    :deep(.marker-badge) {
-        transform: rotate(-90deg);
+        border-radius: 10px;
     }
 }
 
+/* TYPO */
 .tooltip,
 .custom-marker,
 .v-card,
