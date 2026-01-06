@@ -2,16 +2,17 @@
     <v-container fluid>
         <div class="container-main">
             <h1 class="mb-2">
-                Projetos Concluídos e em Contratação - Maricá
+                Acompanhamento - Maricá
             </h1>
 
-            <MapLeaflet />
+            <ProjectTimeline :data="batalhaoMock" />
         </div>
     </v-container>
 </template>
 
 <script setup>
-import MapLeaflet from '../../components/MapComponents/MapLeaflet.vue';
+import { batalhaoMock } from "../../components/ProjectTimeline/mock";
+import ProjectTimeline from "../../components/ProjectTimeline/ProjectTimeline.vue";
 </script>
 
 <style scoped>

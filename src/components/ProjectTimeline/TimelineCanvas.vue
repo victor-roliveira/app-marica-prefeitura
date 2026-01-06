@@ -1,35 +1,49 @@
 <template>
-    <div class="tc-root">
-        <!-- Coluna esquerda: eixo de datas (placeholder por enquanto) -->
-        <div class="tc-axis">
-            <div class="tc-placeholder-title">Eixo (Datas)</div>
-            <div class="tc-placeholder-text">
-                Aqui entra o componente TimelineAxis.vue (Passo 4).
-            </div>
-        </div>
+    <div>
+        <!-- MOBILE: Gantt por tempo (igual ao template) -->
+        <TimelineGanttMobile v-if="isMobile" :project="project" :stages="stages" :progress="progress"
+            :milestones="milestones" :alterations="alterations" :height-px="440" />
 
-        <!-- Miolo: barras e inauguração (placeholder por enquanto) -->
-        <div class="tc-body">
-            <div class="tc-placeholder-title">Timeline (Barras)</div>
-            <div class="tc-placeholder-text">
-                Aqui entram: TimelineInauguration.vue + TimelineBars.vue (Passo 4).
+        <!-- DESKTOP: mantém seu layout atual -->
+        <div v-else class="tc-root">
+            <div class="tc-axis" :style="{ height: 360 + 'px' }">
+                <TimelineAxis :milestones="milestones" :range-start="rangeStart" :range-end="rangeEnd"
+                    :height-px="360" />
             </div>
-        </div>
 
-        <!-- Coluna direita: alterações (placeholder por enquanto) -->
-        <div class="tc-alterations">
-            <div class="tc-placeholder-title">Alterações</div>
-            <div class="tc-placeholder-text">
-                Aqui entra TimelineAlterations.vue (Passo 4).
+            <div class="tc-center">
+                <div class="tc-inaug" :style="{ height: 360 + 'px' }">
+                    <TimelineInauguration :color="config?.color_inauguration ?? '#0A2A66'" />
+                </div>
+
+                <div class="tc-bars">
+                    <TimelineBars :stages="stages" :progress="progress" :config="config" orientation="horizontal" />
+                </div>
+            </div>
+
+            <div class="tc-alterations">
+                <TimelineAlterations :alterations="alterations" />
             </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import type { Project, Stage, StageProgress, Milestone, Alteration, TimelineConfig } from "./types";
+import { computed } from "vue";
+import { useDisplay } from "vuetify";
 
-defineProps<{
+import TimelineAxis from "./TimelineAxis.vue";
+import TimelineInauguration from "./TimelineInauguration.vue";
+import TimelineBars from "./TimelineBars.vue";
+import TimelineAlterations from "./TimelineAlterations.vue";
+import TimelineGanttMobile from "./TimelineGanttMobile.vue";
+
+import type { Project, Stage, StageProgress, Milestone, Alteration, TimelineConfig, ISODate } from "./types";
+
+const display = useDisplay();
+const isMobile = computed(() => display.smAndDown.value);
+
+const props = defineProps<{
     project: Project;
     stages: Stage[];
     progress: StageProgress[];
@@ -37,48 +51,33 @@ defineProps<{
     alterations: Alteration[];
     config?: TimelineConfig;
 }>();
+
+const rangeStart = computed<ISODate>(() => {
+    const times = props.milestones.map((m) => new Date(m.milestone_date).getTime());
+    const min = Math.min(...times);
+    return new Date(min).toISOString().slice(0, 10);
+});
+
+const rangeEnd = computed<ISODate>(() => props.project.inauguration_date);
 </script>
 
 <style scoped>
 .tc-root {
     display: grid;
-    grid-template-columns: 140px 1fr 140px;
+    grid-template-columns: 150px 1fr 150px;
     gap: 12px;
-    align-items: stretch;
+    align-items: start;
+    min-width: 0;
 }
 
-/* caixas */
-.tc-axis,
-.tc-body,
-.tc-alterations {
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 10px;
-    min-height: 360px;
-    padding: 10px;
+.tc-center {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 12px;
+    min-width: 0;
 }
 
-/* placeholders */
-.tc-placeholder-title {
-    font-weight: 800;
-    font-size: 13px;
-    margin-bottom: 6px;
-}
-
-.tc-placeholder-text {
-    font-size: 12px;
-    opacity: 0.7;
-}
-
-/* Responsivo: empilha em telas pequenas */
-@media (max-width: 900px) {
-    .tc-root {
-        grid-template-columns: 1fr;
-    }
-
-    .tc-axis,
-    .tc-body,
-    .tc-alterations {
-        min-height: 200px;
-    }
+.tc-inaug {
+    width: 28px;
 }
 </style>

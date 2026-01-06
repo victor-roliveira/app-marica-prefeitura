@@ -27,6 +27,7 @@ defineProps<{
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    font-family: 'Montserrat';
 }
 
 .th-title {

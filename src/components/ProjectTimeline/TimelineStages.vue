@@ -1,13 +1,13 @@
 <template>
     <div class="ts-root">
         <div v-for="s in stages" :key="s.step_id" class="ts-col">
-            <!-- Nome da etapa (vertical para economizar espaço) -->
+            <!-- Nome da etapa -->
             <div class="ts-stage-name" :class="{ 'is-vertical': s.orientation_text === 'vertical' }"
                 :title="s.step_name">
                 {{ s.step_name }}
             </div>
 
-            <!-- Avanço: emoji se concluída (e showEmojis), senão percentual -->
+            <!-- Valor/emoji -->
             <div class="ts-stage-progress">
                 <template v-if="isCompleted(s.step_id)">
                     <span v-if="showEmojis">{{ s.checked_icon }}</span>
@@ -18,8 +18,16 @@
                     <span v-if="shouldShowPercent(s.step_id)">
                         {{ getPercent(s.step_id) }}%
                     </span>
-                    <span v-else>-</span>
+                    <span v-else>0%</span>
                 </template>
+            </div>
+
+            <!-- BARRA VERTICAL (somente quando showBars = true) -->
+            <div v-if="showBars" class="ts-vbar-bg" :style="{ height: barsHeightPx + 'px' }">
+                <div class="ts-vbar-fill" :style="{
+                    height: getPercent(s.step_id) + '%',
+                    backgroundColor: s.default_color
+                }" />
             </div>
         </div>
     </div>
@@ -32,7 +40,16 @@ const props = defineProps<{
     stages: Stage[];
     progressByStage: Record<string, StageProgress | undefined>;
     showEmojis: boolean;
+
+    /** mobile: renderizar barras verticais abaixo das etapas */
+    showBars?: boolean;
+
+    /** altura do painel da barra no mobile */
+    barsHeightPx?: number;
 }>();
+
+const showBars = props.showBars ?? false;
+const barsHeightPx = props.barsHeightPx ?? 140;
 
 function getProgress(etapaId: string): StageProgress | undefined {
     return props.progressByStage[etapaId];
@@ -63,40 +80,49 @@ function shouldShowPercent(etapaId: string): boolean {
 .ts-root {
     display: flex;
     align-items: flex-end;
-    gap: 10px;
+    gap: 8px;
     overflow-x: auto;
-    padding-bottom: 6px;
+    padding-bottom: 4px;
 }
 
 .ts-col {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 34px;
-    /* coluninha estreita, parecido com a ideia do print */
-    gap: 6px;
+    min-width: 28px;
+    gap: 4px;
 }
 
 .ts-stage-name {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: rgba(0, 0, 0, 0.75);
-    max-width: 20px;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-/* Texto vertical */
 .ts-stage-name.is-vertical {
     writing-mode: vertical-rl;
     transform: rotate(180deg);
-    max-width: unset;
 }
 
 .ts-stage-progress {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 800;
     color: rgba(0, 0, 0, 0.75);
+}
+
+/* Barra vertical compacta */
+.ts-vbar-bg {
+    width: 12px;
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 999px;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+}
+
+.ts-vbar-fill {
+    width: 100%;
+    transition: height 0.25s ease;
 }
 </style>
