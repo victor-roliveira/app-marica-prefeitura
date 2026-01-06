@@ -48,6 +48,8 @@ export interface Alteration {
     project_id: string
     change_number: number
     change_date: ISODate
+    impact_start_date?: ISODate;
+    impact_end_date?: ISODate;
     description: string
     step_impact_id: string
     start_impact: boolean

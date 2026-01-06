@@ -12,14 +12,14 @@ export const batalhaoMock: ProjectTimelineData = {
     },
 
     stages: [
-        { step_id: "ET01", step_name: "Plano de Trabalho", view_order: 1, orientation_text: "vertical", checked_icon: "✅", default_color: "#0bbb11ff" },
+        { step_id: "ET01", step_name: "Plano de Trabalho", view_order: 1, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
         { step_id: "ET02", step_name: "Arquitetura", view_order: 2, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
-        { step_id: "ET03", step_name: "Engenharia", view_order: 3, orientation_text: "vertical", checked_icon: "✅", default_color: "#3F51B5" },
-        { step_id: "ET04", step_name: "Orçamento", view_order: 4, orientation_text: "vertical", checked_icon: "✅", default_color: "#FF9800" },
-        { step_id: "ET05", step_name: "Modelagem", view_order: 5, orientation_text: "vertical", checked_icon: "✅", default_color: "#9C27B0" },
-        { step_id: "ET06", step_name: "Validação", view_order: 6, orientation_text: "vertical", checked_icon: "✅", default_color: "#009688" },
-        { step_id: "ET07", step_name: "Licitação", view_order: 7, orientation_text: "vertical", checked_icon: "✅", default_color: "#795548" },
-        { step_id: "ET08", step_name: "Obra", view_order: 8, orientation_text: "vertical", checked_icon: "✅", default_color: "#0A2A66" },
+        { step_id: "ET03", step_name: "Engenharia", view_order: 3, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET04", step_name: "Orçamento", view_order: 4, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET05", step_name: "Modelagem", view_order: 5, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET06", step_name: "Validação", view_order: 6, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET07", step_name: "Licitação", view_order: 7, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET08", step_name: "Obra", view_order: 8, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
     ],
 
     progress: [
@@ -41,10 +41,9 @@ export const batalhaoMock: ProjectTimelineData = {
     ],
 
     alterations: [
-        { project_id: "BAT01", change_number: 1, change_date: "2025-08-17", description: "Atraso por ajuste de escopo", step_impact_id: "ET03", start_impact: false, end_impact: true, new_end_date: "2025-12-10", change_color: "#FF9800", icon: "⏸️" },
-        { project_id: "BAT01", change_number: 2, change_date: "2025-11-15", description: "Revisão orçamentária solicitada", step_impact_id: "ET04", start_impact: true, end_impact: true, new_start_date: "2025-09-10", new_end_date: "2026-03-15", change_color: "#FF9800", icon: "⏸️" },
-        { project_id: "BAT01", change_number: 2, change_date: "2025-11-15", description: "Revisão orçamentária solicitada", step_impact_id: "ET05", start_impact: true, end_impact: true, new_start_date: "2025-11-10", new_end_date: "2026-08-01", change_color: "#FF9800", icon: "⏸️" },
-        { project_id: "BAT01", change_number: 3, change_date: "2026-02-20", description: "Ajuste de cronograma por licitação", step_impact_id: "ET06", start_impact: false, end_impact: true, new_end_date: "2026-12-01", change_color: "#FF9800", icon: "⏸️" },
+        { project_id: "BAT01", change_number: 1, change_date: "2025-08-15", impact_start_date: "2025-08-15", impact_end_date: "2025-10-25", description: "Atraso por ajuste de escopo", step_impact_id: "ET03", start_impact: false, end_impact: true, new_end_date: "2025-12-10", change_color: "#FF9800", icon: "⏸️" },
+        { project_id: "BAT01", change_number: 2, change_date: "2025-11-15", impact_start_date: "2025-11-16", impact_end_date: "2025-12-05", description: "Revisão orçamentária solicitada", step_impact_id: "ET05", start_impact: true, end_impact: true, new_start_date: "2025-11-10", new_end_date: "2026-08-01", change_color: "#FF9800", icon: "⏸️" },
+        { project_id: "BAT01", change_number: 3, change_date: "2026-02-20", impact_start_date: "2025-11-16", impact_end_date: "2025-12-05", description: "Ajuste de cronograma por licitação", step_impact_id: "ET06", start_impact: false, end_impact: true, new_end_date: "2026-06-30", change_color: "#FF9800", icon: "⏸️" },
     ],
 
     config: {
