@@ -48,25 +48,20 @@
 
                 <v-card-text>
                     <div class="gm-modal-row">
-                        <div class="gm-modal-label">Data</div>
+                        <div class="gm-modal-label">Data:</div>
                         <div class="gm-modal-value">
                             {{ selectedMilestone ? fmt(selectedMilestone.milestone_date) : "-" }}
                         </div>
                     </div>
 
                     <div class="gm-modal-row">
-                        <div class="gm-modal-label">Descrição</div>
+                        <div class="gm-modal-label">Descrição:</div>
                         <div class="gm-modal-value">{{ selectedMilestone?.description ?? "-" }}</div>
                     </div>
 
                     <div class="gm-modal-row">
-                        <div class="gm-modal-label">Tipo</div>
+                        <div class="gm-modal-label">Momento:</div>
                         <div class="gm-modal-value">{{ selectedMilestone?.milestone_type ?? "-" }}</div>
-                    </div>
-
-                    <div class="gm-modal-row">
-                        <div class="gm-modal-label">Fixo</div>
-                        <div class="gm-modal-value">{{ selectedMilestone?.fixed ? "Sim" : "Não" }}</div>
                     </div>
                 </v-card-text>
 
@@ -86,22 +81,22 @@
 
                 <v-card-text>
                     <div class="gm-modal-row">
-                        <div class="gm-modal-label">Registrada em</div>
+                        <div class="gm-modal-label">Registro:</div>
                         <div class="gm-modal-value">{{ selectedChange ? fmt(selectedChange.change_date) : "-" }}</div>
                     </div>
 
                     <div class="gm-modal-row">
-                        <div class="gm-modal-label">Descrição</div>
+                        <div class="gm-modal-label">Descrição:</div>
                         <div class="gm-modal-value">{{ selectedChange?.description ?? "-" }}</div>
                     </div>
 
                     <div class="gm-modal-row">
-                        <div class="gm-modal-label">Etapa</div>
+                        <div class="gm-modal-label">Etapa:</div>
                         <div class="gm-modal-value">{{ selectedChange?.step_impact_id ?? "-" }}</div>
                     </div>
 
                     <div v-if="selectedChangeImpactRange" class="gm-modal-row">
-                        <div class="gm-modal-label">Impacto</div>
+                        <div class="gm-modal-label">Impacto:</div>
                         <div class="gm-modal-value">
                             {{ fmt(selectedChangeImpactRange.start) }} → {{ fmt(selectedChangeImpactRange.end) }}
                         </div>
@@ -505,10 +500,9 @@ const selectedChangeImpactRange = computed<{ start: ISODate; end: ISODate } | nu
     right: 0;
     border-radius: 2px;
     background: #ee790c;
-    opacity: 0.85;
+    opacity: 0.84;
     z-index: 2;
     pointer-events: none;
-    box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.18);
 }
 
 /* linhas de alteração */
@@ -568,6 +562,7 @@ const selectedChangeImpactRange = computed<{ start: ISODate; end: ISODate } | nu
 
 .gm-modal-label {
     font-weight: 800;
+    font-size: 15px;
     opacity: 0.75;
 }
 
