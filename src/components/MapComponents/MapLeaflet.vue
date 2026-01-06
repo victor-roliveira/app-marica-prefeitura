@@ -35,7 +35,7 @@
                 <v-card-actions>
                     <v-spacer />
                     <v-btn class="text-white" color="orange" variant="flat" @click="dialog = false">
-                        Fechar
+                        Detalhes
                     </v-btn>
                 </v-card-actions>
             </v-card>
