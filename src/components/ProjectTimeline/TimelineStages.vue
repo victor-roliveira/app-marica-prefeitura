@@ -78,38 +78,46 @@ function shouldShowPercent(etapaId: string): boolean {
 
 <style scoped>
 .ts-root {
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 4px;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--stage-gap, 8px);   /* antes: 10px */
+  overflow-x: auto;
+  padding-bottom: 2px;
+  font-family: 'Montserrat';
 }
 
 .ts-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 28px;
-    gap: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: var(--stage-col-width, 18px);
+  gap: 2px;                    /* antes: 4px */
 }
 
+/* Nome da etapa */
 .ts-stage-name {
-    font-size: 11px;
-    font-weight: 600;
-    color: rgba(0, 0, 0, 0.75);
-    white-space: nowrap;
+  font-size: 10px;             /* antes: 11–12px */
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.75);
+  white-space: nowrap;
+  line-height: 1.05;
 }
 
+/* Vertical */
 .ts-stage-name.is-vertical {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
 }
 
+/* Percentual */
 .ts-stage-progress {
-    font-size: 11px;
-    font-weight: 800;
-    color: rgba(0, 0, 0, 0.75);
+  font-size: 10px;             /* antes: 11–12px */
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.7);
+  line-height: 1;
+  padding-top: 10px;
 }
+
 
 /* Barra vertical compacta */
 .ts-vbar-bg {

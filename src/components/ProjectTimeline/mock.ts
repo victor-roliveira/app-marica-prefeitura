@@ -12,7 +12,7 @@ export const batalhaoMock: ProjectTimelineData = {
     },
 
     stages: [
-        { step_id: "ET01", step_name: "Plano de Trabalho", view_order: 1, orientation_text: "vertical", checked_icon: "✅", default_color: "#4CAF50" },
+        { step_id: "ET01", step_name: "Plano de Trabalho", view_order: 1, orientation_text: "vertical", checked_icon: "✅", default_color: "#0bbb11ff" },
         { step_id: "ET02", step_name: "Arquitetura", view_order: 2, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
         { step_id: "ET03", step_name: "Engenharia", view_order: 3, orientation_text: "vertical", checked_icon: "✅", default_color: "#3F51B5" },
         { step_id: "ET04", step_name: "Orçamento", view_order: 4, orientation_text: "vertical", checked_icon: "✅", default_color: "#FF9800" },

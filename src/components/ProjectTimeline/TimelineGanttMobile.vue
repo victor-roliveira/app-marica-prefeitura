@@ -11,7 +11,9 @@
 
         <!-- TRILHA: inauguração + colunas das etapas -->
         <div class="gm-track" :style="{ height: heightPx + 'px' }">
-            <div class="gm-inaug" />
+            <div class="gm-inaug">
+                <span class="gm-inaug-label">Inauguração</span>
+            </div>
 
             <div class="gm-stages">
                 <div v-for="s in stages" :key="s.step_id" class="gm-stage-col" :title="s.step_name">
@@ -27,11 +29,13 @@
 
         <!-- ALTERAÇÕES (badges) -->
         <div class="gm-changes" :style="{ height: heightPx + 'px' }">
-            <div v-for="a in alterations" :key="'b-' + a.change_number + '-' + a.step_impact_id" class="gm-change"
-                :style="{ top: y(a.change_date) + 'px' }">
+            <button v-for="a in alterations" :key="'b-' + a.change_number + '-' + a.step_impact_id" type="button"
+                class="gm-change gm-change-btn" :style="{ top: y(a.change_date) + 'px' }" @click="openChange(a)"
+                :aria-label="`Alteração ${a.change_number} em ${fmt(a.change_date)}`">
                 <div class="gm-badge">{{ a.change_number }}</div>
-                <div class="gm-cdate">{{ fmt(a.change_date) }}</div>
-            </div>
+
+            </button>
+
         </div>
 
         <!-- MODAL (milestone) -->
@@ -45,7 +49,7 @@
                     <div class="gm-modal-row">
                         <div class="gm-modal-label">Data</div>
                         <div class="gm-modal-value">{{ selectedMilestone ? fmt(selectedMilestone.milestone_date) : "-"
-                            }}</div>
+                        }}</div>
                     </div>
 
                     <div class="gm-modal-row">
@@ -70,6 +74,44 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <!-- MODAL (change) -->
+        <v-dialog v-model="changeDialog" max-width="420">
+            <v-card>
+                <v-card-title class="text-subtitle-1 font-weight-bold">
+                    Alteração {{ selectedChange?.change_number ?? "" }}
+                </v-card-title>
+
+                <v-card-text>
+                    <div class="gm-modal-row">
+                        <div class="gm-modal-label">Data</div>
+                        <div class="gm-modal-value">{{ selectedChange ? fmt(selectedChange.change_date) : "-" }}</div>
+                    </div>
+
+                    <div class="gm-modal-row">
+                        <div class="gm-modal-label">Etapa</div>
+                        <div class="gm-modal-value">{{ selectedChange?.step_impact_id ?? "-" }}</div>
+                    </div>
+
+                    <!-- Se existir no seu types.ts, já aparece; se não existir, remove -->
+                    <div v-if="(selectedChange as any)?.reason" class="gm-modal-row">
+                        <div class="gm-modal-label">Motivo</div>
+                        <div class="gm-modal-value">{{ (selectedChange as any)?.reason }}</div>
+                    </div>
+
+                    <div v-if="(selectedChange as any)?.notes" class="gm-modal-row">
+                        <div class="gm-modal-label">Obs</div>
+                        <div class="gm-modal-value">{{ (selectedChange as any)?.notes }}</div>
+                    </div>
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn variant="tonal" @click="changeDialog = false">Fechar</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
     </div>
 </template>
 
@@ -91,10 +133,17 @@ const heightPx = computed(() => props.heightPx ?? 440);
 /* modal state */
 const milestoneDialog = ref(false);
 const selectedMilestone = ref<Milestone | null>(null);
+const changeDialog = ref(false);
+const selectedChange = ref<Alteration | null>(null);
 
 function openMilestone(m: Milestone) {
     selectedMilestone.value = m;
     milestoneDialog.value = true;
+}
+
+function openChange(a: Alteration) {
+    selectedChange.value = a;
+    changeDialog.value = true;
 }
 
 /* range principal */
@@ -191,7 +240,8 @@ function blockStyle(etapaId: string, color: string) {
     --stage-gap: 10px;
 
     display: grid;
-    grid-template-columns: 26px 1fr 110px;
+    grid-template-columns: 26px 1fr 44px;
+
     /* eixo compacto */
     gap: 10px;
     align-items: start;
@@ -239,10 +289,27 @@ function blockStyle(etapaId: string, color: string) {
 
 .gm-inaug {
     width: 22px;
-    border-radius: 12px;
-    background: #0A2A66;
     height: 100%;
+    border-radius: 2px;
+    background: #0A2A66;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
+.gm-inaug-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    color: #ffffff;
+    opacity: 0.9;
+    user-select: none;
+    white-space: nowrap;
+}
+
 
 .gm-stages {
     position: relative;
@@ -265,7 +332,7 @@ function blockStyle(etapaId: string, color: string) {
     position: absolute;
     left: 0;
     right: 0;
-    border-radius: 8px;
+    border-radius: 2px;
     opacity: 0.95;
 }
 
@@ -331,5 +398,13 @@ function blockStyle(etapaId: string, color: string) {
 
 .gm-modal-value {
     word-break: break-word;
+}
+
+.v-dialog {
+    font-family: 'Montserrat';
+}
+
+.v-card-title {
+    font-family: 'Montserrat';
 }
 </style>

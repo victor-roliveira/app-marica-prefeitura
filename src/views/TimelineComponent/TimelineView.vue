@@ -2,7 +2,7 @@
     <v-container fluid>
         <div class="container-main">
             <h1 class="mb-2">
-                Acompanhamento - Maricá
+                Acompanhamento de Projetos
             </h1>
 
             <ProjectTimeline :data="batalhaoMock" />

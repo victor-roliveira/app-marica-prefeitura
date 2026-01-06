@@ -3,8 +3,10 @@
         <v-card-text class="pt-root">
             <TimelineHeader :title="headerTitle" :status="data.project.status" />
 
-            <TimelineStages :stages="sortedStages" :progress-by-stage="progressByStage" :show-emojis="showEmojis"
-                :show-bars="false" />
+            <div class="pt-stages-mobile">
+                <TimelineStages :stages="sortedStages" :progress-by-stage="progressByStage" :show-emojis="showEmojis"
+                    :show-bars="false" />
+            </div>
 
             <TimelineCanvas :project="data.project" :stages="sortedStages" :progress="data.progress"
                 :milestones="data.milestones" :alterations="data.alterations" :config="data.config" />
@@ -14,7 +16,6 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useDisplay } from "vuetify";
 
 import TimelineHeader from "./TimelineHeader.vue";
 import TimelineStages from "./TimelineStages.vue";
@@ -23,9 +24,6 @@ import TimelineCanvas from "./TimelineCanvas.vue";
 import type { ProjectTimelineData, Stage, StageProgress } from "./types";
 
 const props = defineProps<{ data: ProjectTimelineData }>();
-
-const display = useDisplay();
-const isMobile = computed(() => display.smAndDown.value);
 
 const headerTitle = computed(() => {
     const name = props.data.project.name_project?.trim() ?? "";
@@ -58,4 +56,18 @@ const showEmojis = computed(() => props.data.config?.show_icons_checked ?? true)
     flex-direction: column;
     gap: 10px;
 }
+
+.pt-stages-mobile {
+  /* alinhamento com o começo das barras no GanttMobile */
+  padding-left: 68px;
+  padding-right: 60px; /* espaço reservado para a coluna das alterações (110px + gap) */
+}
+
+@media (min-width: 960px) {
+  .pt-stages-mobile {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
 </style>
