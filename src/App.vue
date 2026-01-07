@@ -1,24 +1,13 @@
 <template>
   <v-app>
     <!-- Barra de navegação -->
-    <v-app-bar class="text-white" color="blue" elevation="4">
+    <v-app-bar class="text-white" color="white" elevation="4">
       <v-container class="d-flex align-center justify-space-between">
 
         <!-- SELECT DE OBRAS (no lugar da logo) -->
         <div class="d-flex align-center" style="min-width: 0;">
-          <v-select
-            v-model="selectedProjectId"
-            :items="projectOptions"
-            item-title="label"
-            item-value="id"
-            density="compact"
-            variant="solo"
-            rounded="xl"
-            hide-details
-            class="project-select"
-            placeholder="Selecione a obra"
-            @update:model-value="onProjectChange"
-          >
+          <v-select v-model="activeProjectId" :items="options" item-title="label" item-value="id" hide-details
+            density="compact" variant="solo" rounded="xl" @update:model-value="setActiveProject">
             <!-- Valor selecionado -->
             <template #selection="{ item }">
               <span class="project-select-text">
@@ -28,23 +17,13 @@
 
             <!-- Itens do dropdown -->
             <template #item="{ props, item }">
-              <v-list-item
-                v-bind="props"
-                :title="item.raw.label"
-                :subtitle="item.raw.subtitle"
-              />
+              <v-list-item v-bind="props" :title="item.raw.label" :subtitle="item.raw.subtitle" />
             </template>
           </v-select>
         </div>
 
         <!-- TABS (DESKTOP) -->
-        <v-tabs
-          v-if="!isMobile"
-          v-model="currentTab"
-          density="comfortable"
-          align-tabs="end"
-          class="flex-grow-1 ml-4"
-        >
+        <v-tabs v-if="!isMobile" v-model="currentTab" density="comfortable" align-tabs="end" class="flex-grow-1 ml-4">
           <v-tab value="home" @click="goTo('/')">
             <v-icon start>mdi-home</v-icon>
             Página Principal
@@ -76,11 +55,8 @@
       <v-list nav density="comfortable">
         <v-list-item title="Página Principal" prepend-icon="mdi-home" @click="navigateMobile('/')" />
         <v-list-item title="Projetos (Mapa)" prepend-icon="mdi-map-search" @click="navigateMobile('/projetos')" />
-        <v-list-item
-          title="Acompanhamento"
-          prepend-icon="mdi-chart-bell-curve-cumulative"
-          @click="navigateMobile('/acompanhamento')"
-        />
+        <v-list-item title="Acompanhamento" prepend-icon="mdi-chart-bell-curve-cumulative"
+          @click="navigateMobile('/acompanhamento')" />
       </v-list>
     </v-navigation-drawer>
 
@@ -95,6 +71,9 @@
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
+import { useActiveProject } from "./composables/useActiveProject";
+
+const { activeProjectId, options, setActiveProject } = useActiveProject();
 
 const route = useRoute()
 const router = useRouter()
@@ -143,6 +122,10 @@ function navigateMobile(path) {
 </script>
 
 <style scoped>
+.v-select {
+  font-family: 'Montserrat';
+}
+
 .v-tabs,
 .v-list-item {
   font-family: 'Montserrat';
@@ -161,6 +144,14 @@ function navigateMobile(path) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.mdi-menu {
+  color: black;
+}
+
+.mdi-close {
+  color: black
 }
 
 /* harmoniza o select com a app-bar */

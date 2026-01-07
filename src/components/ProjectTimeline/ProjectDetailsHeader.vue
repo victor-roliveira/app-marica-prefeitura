@@ -186,8 +186,8 @@ function formatDelayNumber(days: number) {
 
 /* link "Objeto da OS" azul */
 .pd-oslink {
-    color: black;
-    font-weight: 400;
+    color: gray;
+    font-weight: 600;
     text-transform: none;
     padding-left: 10px;
     padding-right: 10px;
@@ -266,10 +266,10 @@ function formatDelayNumber(days: number) {
 
 .pd-label {
     font-size: 12px;
-    font-weight: 900;
+    font-weight: 600;
     letter-spacing: 0.6px;
     text-transform: uppercase;
-    color: #7b8798;
+    color: #67768b;
         font-size: 10px;
 }
 

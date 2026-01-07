@@ -1,7 +1,7 @@
 // projectDetailsTypes.ts
 import type { ISODate } from "./types";
 
-export type HealthStatus = "On Track" | "Em Risco" | "Crítico";
+export type HealthStatus = "Em Dia" | "Em Risco" | "Crítico";
 
 export interface ProjectDetailsHeaderChip {
   icon?: string;
