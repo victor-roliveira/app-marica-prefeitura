@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <!-- Barra de navegação -->
-    <v-app-bar class="text-white" color="orange" elevation="4">
+    <v-app-bar class="text-white" color="blue" elevation="4">
       <v-container class="d-flex align-center justify-space-between">
 
         <!-- SELECT DE OBRAS (no lugar da logo) -->
