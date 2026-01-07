@@ -78,7 +78,7 @@ const heightPx = computed(() => props.heightPx ?? 220);
     width: 100%;
     height: 14px;
     background: rgba(0, 0, 0, 0.12);
-    border-radius: 999px;
+    border-radius: 2px;
     overflow: hidden;
 }
 
@@ -110,7 +110,7 @@ const heightPx = computed(() => props.heightPx ?? 220);
     width: 14px;
     height: 100%;
     background: rgba(0, 0, 0, 0.12);
-    border-radius: 999px;
+    border-radius: 2px;
     overflow: hidden;
 
     display: flex;

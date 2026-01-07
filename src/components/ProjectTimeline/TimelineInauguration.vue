@@ -22,7 +22,7 @@ defineProps<{ color: string }>();
     width: 22px;
     /* mais estreito (achatado) */
     height: 100%;
-    border-radius: 12px;
+    border-radius: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
