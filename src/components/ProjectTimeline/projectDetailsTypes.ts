@@ -1,48 +1,46 @@
-// projectDetails.types.ts
+// projectDetailsTypes.ts
 import type { ISODate } from "./types";
 
 export type HealthStatus = "On Track" | "Em Risco" | "Crítico";
 
 export interface ProjectDetailsHeaderChip {
-    icon?: string;          // ex: "mdi-pound", "mdi-domain"
-    label: string;          // ex: "#2023-8841"
+  icon?: string;
+  label: string;
 }
 
 export interface ProjectDetailsActions {
-    reportLabel?: string;   // ex: "RELATÓRIA"
-    reportIcon?: string;    // ex: "mdi-file-chart"
-    onReport?: () => void;
+  reportLabel?: string;
+  reportIcon?: string;
+  onReport?: () => void;
 
-    osObjectLabel?: string; // ex: "OBJETO DA OS"
-    osObjectIcon?: string;  // ex: "mdi-file-document-outline"
-    onOsObject?: () => void;
-
-    exitIcon?: string;      // ex: "mdi-exit-to-app"
-    onExit?: () => void;
+  osObjectLabel?: string;
+  osObjectIcon?: string;
+  onOsObject?: () => void;
 }
 
 export interface ProjectDetailsKpis {
-    expectedDeliveryLabel?: string; // "ENTREGA PREVISTA"
-    expectedDelivery: ISODate;
+  expectedDeliveryLabel?: string;
+  expectedDelivery: ISODate;
 
-    physicalProgressLabel?: string; // "AVANÇO FÍSICO"
-    physicalProgressPercent: number; // 0..100
-    physicalTag?: HealthStatus;      // chip no card (ex: "On Track")
+  physicalProgressLabel?: string;
+  physicalProgressPercent: number;
+  physicalTag?: HealthStatus;
 
-    delayDaysLabel?: string;         // "DIAS DE ATRASO"
-    delayDays: number;               // pode ser negativo/0/positivo
+  delayDaysLabel?: string;
+  delayDays: number;
 
-    overallStatusLabel?: string;      // "STATUS GERAL"
-    overallStatus: HealthStatus;      // "Em Risco"
+  overallStatusLabel?: string;
+  overallStatus: HealthStatus;
 }
 
+/**
+ * VIEWMODEL DO HEADER (SEM SELECT)
+ * O select fica na AppBar, então o header não precisa dessas props.
+ */
 export interface ProjectDetailsViewModel {
-    title: string; // "BATALHÃO"
-    updatedText?: string; // "ATUALIZADO: HOJE, 09:30"
-
-    chips?: ProjectDetailsHeaderChip[];
-
-    actions?: ProjectDetailsActions;
-
-    kpis: ProjectDetailsKpis;
+  title: string;
+  updatedText?: string;
+  chips?: ProjectDetailsHeaderChip[];
+  actions?: ProjectDetailsActions;
+  kpis: ProjectDetailsKpis;
 }
