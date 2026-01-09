@@ -6,6 +6,23 @@ export type TextOrientation = "vertical" | "horizontal"
 
 export type MilestoneType = "início" | "intermediário" | "final"
 
+export type AxisMarker =
+    | {
+        kind: "milestone";
+        key: string;
+        date: ISODate;
+        milestone: Milestone;
+    }
+    | {
+        kind: "step-end";
+        key: string;
+        date: ISODate;
+        step_id: string;
+        step_name: string;
+        end_type: "baseline" | "replanned";
+    };
+
+
 export interface Project {
     project_id: string
     name_project: string

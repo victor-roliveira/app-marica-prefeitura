@@ -4,8 +4,6 @@
         <div class="gd-h-axis"></div>
 
         <div class="gd-h-track">
-            <!-- agora o header começa DEPOIS da inauguração -->
-            -->
             <div class="gd-h-stages">
                 <TimelineStages :stages="stages" :progress-by-stage="progressByStage" :show-emojis="true"
                     :show-bars="false" />

@@ -30,7 +30,7 @@ export const batalhaoMock: ProjectTimelineData = {
         { project_id: "BAT01", step_id: "ET05", advance_percent: 40, step_start_date: "2025-11-01", step_end_date: "2026-07-01", show_percent: true, completed: false },
         { project_id: "BAT01", step_id: "ET06", advance_percent: 20, step_start_date: "2026-01-15", step_end_date: "2026-10-01", show_percent: true, completed: false },
         { project_id: "BAT01", step_id: "ET07", advance_percent: 0, step_start_date: "2026-10-01", step_end_date: "2027-02-01", show_percent: true, completed: false },
-        { project_id: "BAT01", step_id: "ET08", advance_percent: 0, step_start_date: "2027-02-01", step_end_date: "2027-10-02", show_percent: true, completed: false },
+        { project_id: "BAT01", step_id: "ET08", advance_percent: 0, step_start_date: "2026-02-01", step_end_date: "2026-10-02", show_percent: true, completed: false },
     ],
 
     milestones: [

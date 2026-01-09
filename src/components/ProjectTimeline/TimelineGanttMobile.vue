@@ -1,13 +1,17 @@
 <template>
     <div class="gm-root">
-        <!-- EIXO (marcos) -->
-        <div class="gm-axis" :style="{ height: heightPx + 'px' }">
-            <div class="gm-axis-line" />
-
-            <button v-for="m in sortedMilestones" :key="m.milestone_id" class="gm-dot" type="button"
-                :style="{ top: y(m.milestone_date) + 'px' }" @click="openMilestone(m)"
-                :aria-label="`Marco: ${fmt(m.milestone_date)} - ${m.description}`" />
+        <!-- LINHAS: término da etapa (dot → barra da etapa) -->
+        <div class="gm-endlines" :style="{ height: heightPx + 'px' }">
+            <div v-for="ln in stepEndLines" :key="ln.key" class="gm-endline" :style="{
+                top: ln.top + 'px',
+                left: ln.left + 'px',
+                width: ln.width + 'px'
+            }" />
         </div>
+
+        <!-- EIXO (marcos) -->
+        <TimelineAxis class="gm-axis" mode="dots" :milestones="milestones" :stages="stages" :progress="progress"
+            :rangeStart="rangeStart" :rangeEnd="rangeEnd" :heightPx="heightPx" @select="onAxisSelect" />
 
         <!-- TRILHA: inauguração + colunas das etapas -->
         <div class="gm-track" :style="{ height: heightPx + 'px' }">
@@ -15,15 +19,17 @@
                 <span class="gm-inaug-label">Inauguração</span>
             </div>
 
-            <div class="gm-stages">
+            <div class="gm-stages" ref="stagesEl">
                 <div v-for="s in stages" :key="s.step_id" class="gm-stage-col" :title="s.step_name">
                     <!-- barra principal da etapa -->
                     <div v-if="rangeByStage[s.step_id]" class="gm-block"
                         :style="blockStyle(s.step_id, s.default_color)" />
 
                     <!-- overlays de impacto (laranja) - intervalo real -->
-                    <div v-for="impact in impactsByStage[s.step_id] ?? []" :key="impact.key" class="gm-impact"
-                        :style="impactStyle(impact.start, impact.end)" :title="impact.title" />
+                    <div v-for="ext in extensionsByStage[s.step_id] ?? []" :key="ext.key" class="gm-delay"
+                        :style="impactStyle(ext.start, ext.end)" :title="ext.title">
+                        <span class="gm-delay-label">{{ ext.label }}</span>
+                    </div>
                 </div>
             </div>
 
@@ -119,12 +125,47 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <!-- MODAL (step end) -->
+        <v-dialog v-model="stepEndDialog" max-width="420">
+            <v-card>
+                <v-card-title class="text-subtitle-1 font-weight-bold">
+                    Término da Etapa
+                </v-card-title>
+
+                <v-card-text>
+                    <div class="gm-modal-row">
+                        <div class="gm-modal-label">Etapa:</div>
+                        <div class="gm-modal-value">{{ selectedStepEnd?.step_name ?? "-" }}</div>
+                    </div>
+
+                    <div class="gm-modal-row">
+                        <div class="gm-modal-label">Data:</div>
+                        <div class="gm-modal-value">
+                            {{ selectedStepEnd ? fmt(selectedStepEnd.step_end_date) : "-" }}
+                        </div>
+                    </div>
+
+                    <div class="gm-modal-row">
+                        <div class="gm-modal-label">Tipo:</div>
+                        <div class="gm-modal-value">Término (baseline)</div>
+                    </div>
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn variant="tonal" @click="stepEndDialog = false">Fechar</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import type { Alteration, ISODate, Milestone, Project, Stage, StageProgress } from "./types";
+import TimelineAxis from "../../components/ProjectTimeline/TimelineAxis.vue";
 
 const props = defineProps<{
     project: Project;
@@ -142,6 +183,16 @@ const milestoneDialog = ref(false);
 const selectedMilestone = ref<Milestone | null>(null);
 const changeDialog = ref(false);
 const selectedChange = ref<Alteration | null>(null);
+const stepEndDialog = ref(false);
+const selectedStepEnd = ref<{ step_id: string; step_name: string; step_end_date: ISODate } | null>(null);
+
+type ExtensionInterval = {
+    key: string;
+    start: ISODate;
+    end: ISODate;
+    label: string;
+    title: string;
+};
 
 function openMilestone(m: Milestone) {
     selectedMilestone.value = m;
@@ -153,11 +204,23 @@ function openChange(a: Alteration) {
     changeDialog.value = true;
 }
 
-/**
- * IMPORTANTÍSSIMO (timezone):
- * - Para "YYYY-MM-DD", não use new Date("YYYY-MM-DD") pois isso vira UTC e pode cair 1 dia no Brasil.
- * - Usamos "meio-dia local" para cálculos e um formatter manual para exibição.
- */
+function onAxisSelect(payload: any) {
+    if (payload?.kind === "milestone") {
+        openMilestone(payload.milestone);
+        return;
+    }
+
+    if (payload?.kind === "step-end") {
+        selectedStepEnd.value = {
+            step_id: payload.step_id,
+            step_name: payload.step_name,
+            step_end_date: payload.step_end_date,
+        };
+        stepEndDialog.value = true;
+        return;
+    }
+}
+
 function fmt(dateIso: ISODate) {
     const [y, m, d] = String(dateIso).split("-");
     if (!y || !m || !d) return String(dateIso);
@@ -187,10 +250,6 @@ function normalizeRange(start: ISODate, end: ISODate): { start: ISODate; end: IS
 
 /* range principal */
 const rangeStart = computed<ISODate>(() => {
-    // menor milestone_date (sem efeito timezone)
-    const times = props.milestones.map((m) => toLocalMiddayTime(m.milestone_date));
-    const min = Math.min(...times.filter((t) => Number.isFinite(t)));
-    // reconstrói YYYY-MM-DD via milestone mais cedo
     const earliest = [...props.milestones].sort(
         (a, b) => toLocalMiddayTime(a.milestone_date) - toLocalMiddayTime(b.milestone_date)
     )[0];
@@ -214,24 +273,16 @@ function y(dateIso: ISODate): number {
     return padTop + ratio(dateIso) * usable;
 }
 
-const sortedMilestones = computed(() =>
-    [...props.milestones].sort(
-        (a, b) => toLocalMiddayTime(a.milestone_date) - toLocalMiddayTime(b.milestone_date)
-    )
-);
-
 /* ranges por etapa */
 const rangeByStage = computed<Record<string, { start: ISODate; end: ISODate } | undefined>>(() => {
     const map: Record<string, { start: ISODate; end: ISODate } | undefined> = {};
 
-    // 1) preferencial: progress
     for (const p of props.progress) {
         if (p.step_start_date && p.step_end_date) {
             map[p.step_id] = { start: p.step_start_date, end: p.step_end_date };
         }
     }
 
-    // 2) fallback: stage (se existir)
     for (const s of props.stages) {
         const anyStage = s as any;
         if (!map[s.step_id] && anyStage.step_start_date && anyStage.step_end_date) {
@@ -239,7 +290,6 @@ const rangeByStage = computed<Record<string, { start: ISODate; end: ISODate } | 
         }
     }
 
-    // 3) fallback final: bloco mínimo (DEV)
     for (const s of props.stages) {
         if (!map[s.step_id]) {
             map[s.step_id] = { start: rangeStart.value, end: rangeStart.value };
@@ -267,12 +317,7 @@ function blockStyle(stepId: string, color: string) {
     };
 }
 
-/**
- * Impactos (overlays laranja):
- * - Preferencial: impact_start_date + impact_end_date (intervalo explícito)
- * - Derivado: progress + flags start_impact/end_impact + new_start_date/new_end_date
- * - 1 overlay por alteração (intervalo combinado)
- */
+/* progressByStep + extensionsByStage (mantido) */
 type ImpactInterval = {
     key: string;
     stepId: string;
@@ -287,6 +332,72 @@ const progressByStep = computed(() => {
     return map;
 });
 
+function diffDays(start: ISODate, end: ISODate): number {
+    const s = toLocalMiddayTime(start);
+    const e = toLocalMiddayTime(end);
+    if (!Number.isFinite(s) || !Number.isFinite(e)) return 0;
+    return Math.max(0, Math.round((e - s) / (1000 * 60 * 60 * 24)));
+}
+
+function addDays(dateIso: ISODate, days: number): ISODate {
+    const t = toLocalMiddayTime(dateIso);
+    const dt = new Date(t + days * 24 * 60 * 60 * 1000);
+    const y = dt.getFullYear();
+    const m = String(dt.getMonth() + 1).padStart(2, "0");
+    const d = String(dt.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}` as ISODate;
+}
+
+
+const extensionsByStage = computed<Record<string, ExtensionInterval[]>>(() => {
+    const map: Record<string, ExtensionInterval[]> = {};
+
+    // agrupar alterações por etapa
+    const byStage: Record<string, any[]> = {};
+    for (const a of props.alterations as any[]) {
+        const stepId = String(a.step_impact_id);
+        (byStage[stepId] ??= []).push(a);
+    }
+
+    for (const stepId of Object.keys(byStage)) {
+        const p = progressByStep.value[stepId];
+        if (!p?.step_end_date) continue;
+
+        // "cursor" começa no término baseline da etapa
+        let cursorEnd: ISODate = p.step_end_date;
+
+        const changes = byStage[stepId]
+            // precisa ter intervalo de impacto OU uma forma alternativa de calcular duração
+            .filter((a) => (a.impact_start_date && a.impact_end_date) || a.duration_days)
+            .sort((a, b) => toLocalMiddayTime(a.change_date) - toLocalMiddayTime(b.change_date));
+
+        for (const a of changes) {
+            const duration =
+                a.duration_days ??
+                diffDays(a.impact_start_date as ISODate, a.impact_end_date as ISODate);
+
+            if (!duration || duration <= 0) continue;
+
+            const start = cursorEnd;
+            const end = addDays(cursorEnd, duration);
+
+            (map[stepId] ??= []).push({
+                key: `ext-${stepId}-${a.change_number}`,
+                start,
+                end,
+                label: String(a.change_number),
+                title: `Alteração ${a.change_number}: +${duration} dias — ${a.description ?? ""}`.trim(),
+            });
+
+            // próximo atraso começa após este atraso
+            cursorEnd = end;
+        }
+    }
+
+    return map;
+});
+
+
 const impactsByStage = computed<Record<string, ImpactInterval[]>>(() => {
     const map: Record<string, ImpactInterval[]> = {};
 
@@ -294,7 +405,6 @@ const impactsByStage = computed<Record<string, ImpactInterval[]>>(() => {
         const stepId = String(a.step_impact_id);
         if (!map[stepId]) map[stepId] = [];
 
-        // 1) explícito no dado
         if (a.impact_start_date && a.impact_end_date) {
             map[stepId].push({
                 key: `ch${a.change_number}-explicit-${stepId}`,
@@ -306,14 +416,12 @@ const impactsByStage = computed<Record<string, ImpactInterval[]>>(() => {
             continue;
         }
 
-        // 2) derivar do progress + new_start/new_end
         const p = progressByStep.value[stepId];
         if (!p) continue;
 
         let start: ISODate | null = null;
         let end: ISODate | null = null;
 
-        // impacto no início
         if (a.start_impact && a.new_start_date) {
             const r = normalizeRange(p.step_start_date, a.new_start_date);
             if (r) {
@@ -322,7 +430,6 @@ const impactsByStage = computed<Record<string, ImpactInterval[]>>(() => {
             }
         }
 
-        // impacto no fim
         if (a.end_impact && a.new_end_date) {
             const r = normalizeRange(p.step_end_date, a.new_end_date);
             if (r) {
@@ -330,7 +437,6 @@ const impactsByStage = computed<Record<string, ImpactInterval[]>>(() => {
                     start = r.start;
                     end = r.end;
                 } else {
-                    // intervalo combinado cobrindo tudo
                     const r2 = normalizeRange(start, end);
                     const r3 = normalizeRange(r.start, r.end);
                     if (r2 && r3) {
@@ -358,7 +464,6 @@ const impactsByStage = computed<Record<string, ImpactInterval[]>>(() => {
         }
     }
 
-    // ordenar por data inicial do impacto
     for (const k of Object.keys(map)) {
         map[k].sort((x, y) => toLocalMiddayTime(x.start) - toLocalMiddayTime(y.start));
     }
@@ -379,7 +484,6 @@ function impactStyle(start: ISODate, end: ISODate) {
     };
 }
 
-/* modal: mostrar impacto da alteração selecionada (se houver) */
 const selectedChangeImpactRange = computed<{ start: ISODate; end: ISODate } | null>(() => {
     if (!selectedChange.value) return null;
     const stepId = selectedChange.value.step_impact_id;
@@ -387,10 +491,84 @@ const selectedChangeImpactRange = computed<{ start: ISODate; end: ISODate } | nu
     const found = list.find((x) => x.key.startsWith(`ch${(selectedChange.value as any).change_number}-`));
     return found ? { start: found.start, end: found.end } : null;
 });
+
+/* ======= NOVO: linhas dot término → barra (com suporte a scroll horizontal) ======= */
+const stagesEl = ref<HTMLElement | null>(null);
+const stagesScrollLeft = ref(0);
+
+function onStagesScroll() {
+    stagesScrollLeft.value = stagesEl.value?.scrollLeft ?? 0;
+}
+
+onMounted(() => {
+    if (!stagesEl.value) return;
+    stagesScrollLeft.value = stagesEl.value.scrollLeft;
+    stagesEl.value.addEventListener("scroll", onStagesScroll, { passive: true });
+});
+
+onBeforeUnmount(() => {
+    stagesEl.value?.removeEventListener("scroll", onStagesScroll);
+});
+
+const stepIndexById = computed<Record<string, number>>(() => {
+    const sorted = [...props.stages].sort((a, b) => a.view_order - b.view_order);
+    const map: Record<string, number> = {};
+    sorted.forEach((s, idx) => (map[s.step_id] = idx));
+    return map;
+});
+
+type StepEndLine = { key: string; top: number; left: number; width: number };
+
+const stepEndLines = computed<StepEndLine[]>(() => {
+    // Medidas precisam espelhar seu CSS:
+    const axisColW = 26;     // gm-root grid col 1
+    const rootGap = 10;      // gm-root gap
+
+    const trackInaugW = 22;  // gm-track col 1
+    const trackGap = 10;     // gm-track gap
+
+    const colW = 18;         // --stage-col-width
+    const gap = 10;          // --stage-gap
+
+    // centro do dot no TimelineAxis (guide left 12px, dot left 7px ~ 13px)
+    const axisCenterX = 13;
+
+    // início do "miolo" das etapas (dentro do grid total)
+    const stagesStartX = axisColW + rootGap + trackInaugW + trackGap;
+
+    const lines: StepEndLine[] = [];
+
+    for (const p of props.progress) {
+        if (!p.step_end_date) continue;
+
+        const idx = stepIndexById.value[p.step_id];
+        if (idx === undefined) continue;
+
+        // centro da coluna da etapa, compensando scroll horizontal
+        const stageCenterX =
+            stagesStartX +
+            idx * (colW + gap) +
+            colW / 2 -
+            stagesScrollLeft.value;
+
+        const top = y(p.step_end_date);
+
+        const left = axisCenterX;
+        const width = Math.max(0, stageCenterX - axisCenterX);
+
+        lines.push({
+            key: `endline-${p.step_id}`,
+            top,
+            left,
+            width,
+        });
+    }
+
+    return lines;
+});
 </script>
 
 <style scoped>
-/* IMPORTANTE: vars compartilhadas para alinhar com TimelineStages */
 .gm-root {
     --stage-col-width: 18px;
     --stage-gap: 10px;
@@ -400,44 +578,38 @@ const selectedChangeImpactRange = computed<{ start: ISODate; end: ISODate } | nu
     gap: 10px;
     align-items: start;
     min-width: 0;
-}
 
-/* eixo */
-.gm-axis {
     position: relative;
-    min-width: 0;
+    /* necessário para gm-endlines absolute */
 }
 
-.gm-axis-line {
+.gm-endlines {
     position: absolute;
-    left: 12px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: rgba(0, 0, 0, 0.12);
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.gm-endline {
+    position: absolute;
+    height: 2px;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.18);
     border-radius: 2px;
 }
 
-.gm-dot {
-    position: absolute;
-    left: 7px;
-    transform: translateY(-50%);
-    width: 12px;
-    height: 12px;
-    border-radius: 999px;
-    border: 2px solid rgba(0, 0, 0, 0.35);
-    background: #fff;
-    padding: 0;
-    cursor: pointer;
+.gm-axis {
+    min-width: 0;
+    z-index: 10;
 }
 
-/* trilha */
 .gm-track {
     position: relative;
     min-width: 0;
     display: grid;
     grid-template-columns: 22px 1fr;
     gap: 10px;
+    z-index: 5;
 }
 
 .gm-inaug {
@@ -490,7 +662,8 @@ const selectedChangeImpactRange = computed<{ start: ISODate; end: ISODate } | nu
     left: 0;
     right: 0;
     border-radius: 2px;
-    z-index: 1;
+    z-index: 3;
+    /* acima das linhas */
     opacity: 0.95;
 }
 
@@ -501,11 +674,10 @@ const selectedChangeImpactRange = computed<{ start: ISODate; end: ISODate } | nu
     border-radius: 2px;
     background: #ee790c;
     opacity: 0.84;
-    z-index: 2;
+    z-index: 4;
     pointer-events: none;
 }
 
-/* linhas de alteração */
 .gm-change-line {
     position: absolute;
     left: 0;
@@ -517,10 +689,10 @@ const selectedChangeImpactRange = computed<{ start: ISODate; end: ISODate } | nu
     opacity: 0.9;
 }
 
-/* coluna direita (alterações) */
 .gm-changes {
     position: relative;
     min-width: 0;
+    z-index: 8;
 }
 
 .gm-change {
@@ -531,6 +703,7 @@ const selectedChangeImpactRange = computed<{ start: ISODate; end: ISODate } | nu
     display: flex;
     justify-content: center;
 }
+
 
 .gm-change-btn {
     background: transparent;
@@ -552,7 +725,6 @@ const selectedChangeImpactRange = computed<{ start: ISODate; end: ISODate } | nu
     justify-content: center;
 }
 
-/* modal */
 .gm-modal-row {
     display: grid;
     grid-template-columns: 90px 1fr;
@@ -576,5 +748,31 @@ const selectedChangeImpactRange = computed<{ start: ISODate; end: ISODate } | nu
 
 .v-card-title {
     font-family: "Montserrat";
+}
+
+.gm-delay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-radius: 2px;
+    background: #ff9800;
+    opacity: 0.8;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.gm-delay-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1;
+    opacity: 0.95;
+    user-select: none;
+    pointer-events: none;
 }
 </style>

@@ -3,12 +3,10 @@
         <v-card-text class="pt-root">
             <TimelineHeader :title="headerTitle" :status="data.project.status" />
 
-            <!-- Header das etapas: somente no mobile -->
             <div class="pt-stages-mobile-only">
                 <TimelineStages :stages="sortedStages" :progress-by-stage="progressByStage" :show-emojis="showEmojis"
                     :show-bars="false" />
             </div>
-
 
             <TimelineCanvas :project="data.project" :stages="sortedStages" :progress="data.progress"
                 :milestones="data.milestones" :alterations="data.alterations" :config="data.config" />
