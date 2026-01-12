@@ -2,11 +2,12 @@
     <v-app>
         <v-main class="login-main">
             <div class="login-shell">
-                <v-card class="login-card" elevation="10">
+                <v-card class="login-card" elevation="2">
                     <v-card-text class="login-card-body">
                         <!-- Logo -->
                         <div class="container-logo">
-                            <img class="logo-marica" src="../../public/prefeitura-maricá.png" alt="Logo prefeitura maricá">
+                            <img class="logo-marica" src="../../public/prefeitura-maricá.png"
+                                alt="Logo prefeitura maricá">
                         </div>
 
                         <!-- Title -->
@@ -47,79 +48,102 @@
 
                             <div class="support">
                                 <span>Ainda não tem acesso?</span>
-                                <a class="link" href="#" @click.prevent="onContactAdmin">Contate o administrador</a>
+
+                                <a class="link" :href="gmailLink" target="_blank" rel="noopener">
+                                    Contate o administrador
+                                </a>
                             </div>
+
                         </v-form>
                     </v-card-text>
                 </v-card>
 
-                <div class="footer">
+                <footer class="footer">
                     <div>© 2024 PREFEITURA DE MARICÁ</div>
                     <div>TODOS OS DIREITOS RESERVADOS.</div>
-                </div>
+                </footer>
             </div>
         </v-main>
     </v-app>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 const email = ref("");
 const password = ref("");
 const showPassword = ref(false);
 const loading = ref(false);
 
+const ADMIN_EMAIL = "victor.oliveira@quantaconsultoria.com";
+
+const gmailLink = computed(() => {
+    const to = encodeURIComponent(ADMIN_EMAIL);
+
+    const subject = encodeURIComponent(
+        "Solicitação de acesso – Projetos Maricá"
+    );
+
+    const body = encodeURIComponent(
+        `Olá,
+
+        Gostaria de solicitar acesso ao sistema "Projetos Maricá".
+
+        Nome completo:
+        Email desejado:
+        Setor:
+
+        Obrigado.`
+    );
+
+    return `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}`;
+});
+
 async function onSubmit() {
     loading.value = true;
     try {
-        // TODO: autenticar (API / Supabase / Firebase / etc.)
-        // Exemplo:
-        // await auth.login({ email: email.value, password: password.value });
         console.log("login", { email: email.value, password: password.value });
     } finally {
         loading.value = false;
     }
 }
-
-function onForgot() {
-    // TODO: navegar para /forgot ou abrir modal
-    console.log("forgot password");
-}
-
-function onContactAdmin() {
-    // TODO: navegar para /contato ou abrir modal
-    console.log("contact admin");
-}
 </script>
 
 <style scoped>
-/* Fundo e centralização (bem próximo do layout do print) */
 .login-main {
+    overflow: hidden;
     background: #f3f6fb;
-    min-height: 100vh;
     display: flex;
     font-family: 'Montserrat';
 }
 
 .login-shell {
+    height: 600px;
     width: 100%;
     max-width: 440px;
     margin: 0 auto;
-    padding: 18px 14px 28px;
+    padding: 12px 14px 10px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
 }
 
 /* Card principal */
 .login-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     border-radius: 18px;
     overflow: hidden;
+    margin-top: 30px;
 }
 
 .login-card-body {
-    padding: 22px 18px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 18px 14px;
+    overflow: hidden;
 }
 
 .container-logo {
@@ -131,7 +155,6 @@ function onContactAdmin() {
     width: 200px;
 }
 
-/* Headline */
 .headline {
     text-align: center;
     margin: 14px 0 8px;
@@ -184,7 +207,6 @@ function onContactAdmin() {
     text-decoration: underline;
 }
 
-/* Botão "visibility" como texto, igual ao print */
 .visibility-btn {
     min-width: 0;
     padding: 0 2px;
@@ -198,16 +220,15 @@ function onContactAdmin() {
     padding: 10px 20px;
 }
 
-/* Botão Entrar */
 .submit {
     margin-top: 6px;
     height: 46px;
     font-weight: 800;
     letter-spacing: 0.3px;
     text-transform: none;
+    font-weight: 500;
 }
 
-/* Texto suporte */
 .support {
     margin-top: 2px;
     display: flex;
@@ -217,43 +238,13 @@ function onContactAdmin() {
     color: #6b7892;
 }
 
-/* Faixa do "mapa" */
-.map-strip {
-    margin-top: 16px;
-}
-
-.map-image {
-    height: 78px;
-    border-radius: 12px;
-    overflow: hidden;
-    position: relative;
-
-    /* Troque por uma imagem real do seu projeto (asset local ou URL). */
-    background-image: url("https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1200&q=60");
-    background-size: cover;
-    background-position: center;
-    filter: saturate(1.05);
-}
-
-.map-caption {
-    position: absolute;
-    left: 10px;
-    bottom: 10px;
-    padding: 6px 10px;
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 0.6px;
-    color: #ffffff;
-    background: rgba(3, 18, 43, 0.55);
-    backdrop-filter: blur(6px);
-}
-
 .footer {
+    flex-shrink: 0;
     text-align: center;
     font-size: 11.5px;
     color: #8a94a8;
     line-height: 1.45;
     font-weight: 500;
+    padding: 4px 0 2px;
 }
 </style>

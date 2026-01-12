@@ -22,18 +22,23 @@
         <!-- TABS (DESKTOP) -->
         <v-tabs v-if="!isMobile" v-model="currentTab" density="comfortable" align-tabs="end" class="flex-grow-1 ml-4">
           <v-tab value="home" @click="goTo('/')">
-            <v-icon start>mdi-home</v-icon>
-            Página Principal
+            <v-icon start>mdi-view-dashboard-variant</v-icon>
+            <span>Dashboard</span>
           </v-tab>
 
           <v-tab value="projetos" @click="goTo('/projetos')">
             <v-icon start>mdi-map-search</v-icon>
-            Projetos (Mapa)
+            <span>Projetos (Mapa)</span>
           </v-tab>
 
           <v-tab value="acompanhamento" @click="goToAcompanhamento()">
             <v-icon start>mdi-chart-bell-curve-cumulative</v-icon>
-            Acompanhamento
+            <span>Acompanhamento</span>
+          </v-tab>
+
+          <v-tab value="acompanhamento" @click="goToAcompanhamento()">
+            <v-icon start>mdi-logout</v-icon>
+            <span>Sair</span>
           </v-tab>
         </v-tabs>
 
@@ -49,10 +54,12 @@
     <!-- MENU MOBILE -->
     <v-navigation-drawer v-model="drawer" temporary location="right" width="280">
       <v-list nav density="comfortable">
-        <v-list-item title="Página Principal" prepend-icon="mdi-home" @click="navigateMobile('/')" />
+        <v-list-item title="Dashboard" prepend-icon="mdi-view-dashboard-variant"
+          @click="navigateMobile('/dashboard')" />
         <v-list-item title="Projetos (Mapa)" prepend-icon="mdi-map-search" @click="navigateMobile('/projetos')" />
         <v-list-item title="Acompanhamento" prepend-icon="mdi-chart-bell-curve-cumulative"
           @click="navigateMobileAcompanhamento()" />
+        <v-list-item class="my-16" title="Sair" prepend-icon="mdi-logout" @click="navigateMobile('/')" />
       </v-list>
     </v-navigation-drawer>
 
@@ -153,6 +160,11 @@ function navigateMobileAcompanhamento() {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.v-icon,
+span {
+  color: rgb(0, 0, 0);
 }
 
 .mdi-menu {
