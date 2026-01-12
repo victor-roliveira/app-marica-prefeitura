@@ -15,7 +15,7 @@ export interface ProjectOption {
 export interface ProjectScreenData {
   timeline: ProjectTimelineData;
   details: ProjectDetailsViewModel;
-  os: ProjectOsData; // NOVO
+  os: ProjectOsData; 
 }
 
 export const projectOptions: ProjectOption[] = [
@@ -23,12 +23,6 @@ export const projectOptions: ProjectOption[] = [
   { id: "CUR02", label: "Curva Di Branco", subtitle: "SOMAR • 2023-3262" },
 ];
 
-/**
- * Catálogo local (mocks).
- * Observação: quando migrar para Google Sheets, a recomendação é:
- * - manter uma camada "adapter" que monta ProjectScreenData a partir do retorno do Sheets
- * - e manter este arquivo apenas para DEV / fallback offline
- */
 export const projectsCatalog: Record<ProjectId, ProjectScreenData> = {
   BAT01: {
     timeline: batalhaoMock,
@@ -47,7 +41,6 @@ export const projectsCatalog: Record<ProjectId, ProjectScreenData> = {
 
         osObjectLabel: "Objeto da OS",
         osObjectIcon: "mdi-file-document-outline",
-        // depois vamos alinhar para /acompanhamento/BAT01/os
         osObjectRoute: "/acompanhamento/BAT01/os",
         onOsObject: () => {},
       },
@@ -67,7 +60,6 @@ export const projectsCatalog: Record<ProjectId, ProjectScreenData> = {
       },
     },
 
-    // NOVO: dados da tela "Objeto da OS"
     os: {
       summary: {
         title: "CONSTRUÇÃO BATALHÃO PMM",
