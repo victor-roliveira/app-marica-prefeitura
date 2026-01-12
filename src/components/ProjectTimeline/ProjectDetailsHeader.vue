@@ -38,7 +38,10 @@
         <!-- KPIs (2x2) -->
         <div class="pd-kpis">
             <!-- Entrega prevista -->
-            <div class="pd-card">
+            <!-- Entrega prevista (CLICÁVEL) -->
+            <button type="button" class="pd-card pd-card-clickable" @click="goToDeliveryAnalysis"
+                @keydown.enter.prevent="goToDeliveryAnalysis" @keydown.space.prevent="goToDeliveryAnalysis"
+                aria-label="Abrir Análise de Entrega">
                 <div class="pd-iconbox">
                     <v-icon size="22">mdi-calendar</v-icon>
                 </div>
@@ -47,7 +50,10 @@
                     <div class="pd-label">{{ vm.kpis.expectedDeliveryLabel ?? "ENTREGA PREVISTA" }}</div>
                     <div class="pd-value">{{ fmtDate(vm.kpis.expectedDelivery) }}</div>
                 </div>
-            </div>
+
+                <v-icon class="pd-chev" size="18">mdi-chevron-right</v-icon>
+            </button>
+
 
             <!-- Avanço físico -->
             <div class="pd-card">
@@ -105,14 +111,24 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import type { ProjectDetailsViewModel } from "./projectDetailsTypes";
 
 const router = useRouter();
+const route = useRoute();
 const props = defineProps<{ vm: ProjectDetailsViewModel }>();
+const projectId = computed(() => String(route.params.projectId ?? ""));
 
 const hasReportAction = computed(() => Boolean(props.vm.actions?.reportRoute || props.vm.actions?.onReport));
 const hasOsAction = computed(() => Boolean(props.vm.actions?.osObjectRoute || props.vm.actions?.onOsObject));
+
+function goToDeliveryAnalysis() { // NEW
+    if (!projectId.value) return;
+    router.push({
+        name: "project-delivery-analysis",
+        params: { projectId: projectId.value },
+    });
+}
 
 function handleReport() {
     const route = props.vm.actions?.reportRoute;

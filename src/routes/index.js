@@ -3,6 +3,7 @@ import ProjectsView from "../views/ProjectsComponent/ProjectsView.vue";
 import HomeView from "../views/HomeView.vue";
 import TimelineView from "../views/TimelineComponent/TimelineView.vue";
 import OsObjectView from "../components/ProjectTimeline/OsObjectView.vue";
+import DeliveryAnalysisView from "../components/ProjectTimeline/deliverayAnalisys/components/DeliveryAnalysisView.vue";
 
 
 const routes = [
@@ -14,6 +15,13 @@ const routes = [
 
   // Tela Objeto da OS
   { path: "/acompanhamento/:projectId/os", name: "objeto-os", component: OsObjectView },
+
+  {
+    path: "/projetos/:projectId/analise-entrega",
+    name: "project-delivery-analysis",
+    component: DeliveryAnalysisView,
+  }
+
 ];
 
 const router = createRouter({
