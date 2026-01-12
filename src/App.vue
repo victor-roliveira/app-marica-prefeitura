@@ -3,19 +3,16 @@
     <!-- Barra de navegação -->
     <v-app-bar class="text-white" color="white" elevation="4">
       <v-container class="d-flex align-center justify-space-between">
-
-        <!-- SELECT DE OBRAS (no lugar da logo) -->
+        <!-- SELECT DE OBRAS -->
         <div class="d-flex align-center" style="min-width: 0;">
-          <v-select v-model="activeProjectId" :items="options" item-title="label" item-value="id" hide-details
-            density="compact" variant="solo" rounded="xl" @update:model-value="setActiveProject">
-            <!-- Valor selecionado -->
+          <v-select class="project-select" v-model="activeProjectId" :items="options" item-title="label" item-value="id"
+            hide-details density="compact" variant="solo" rounded="xl" @update:model-value="onSelectProject">
             <template #selection="{ item }">
               <span class="project-select-text">
                 {{ item.raw.label }}
               </span>
             </template>
 
-            <!-- Itens do dropdown -->
             <template #item="{ props, item }">
               <v-list-item v-bind="props" :title="item.raw.label" :subtitle="item.raw.subtitle" />
             </template>
@@ -34,7 +31,7 @@
             Projetos (Mapa)
           </v-tab>
 
-          <v-tab value="acompanhamento" @click="goTo('/acompanhamento')">
+          <v-tab value="acompanhamento" @click="goToAcompanhamento()">
             <v-icon start>mdi-chart-bell-curve-cumulative</v-icon>
             Acompanhamento
           </v-tab>
@@ -43,10 +40,9 @@
         <!-- BOTÃO HAMBURGER (MOBILE) -->
         <v-app-bar-nav-icon v-if="isMobile" @click="drawer = !drawer">
           <v-icon>
-            {{ drawer ? 'mdi-close' : 'mdi-menu' }}
+            {{ drawer ? "mdi-close" : "mdi-menu" }}
           </v-icon>
         </v-app-bar-nav-icon>
-
       </v-container>
     </v-app-bar>
 
@@ -56,7 +52,7 @@
         <v-list-item title="Página Principal" prepend-icon="mdi-home" @click="navigateMobile('/')" />
         <v-list-item title="Projetos (Mapa)" prepend-icon="mdi-map-search" @click="navigateMobile('/projetos')" />
         <v-list-item title="Acompanhamento" prepend-icon="mdi-chart-bell-curve-cumulative"
-          @click="navigateMobile('/acompanhamento')" />
+          @click="navigateMobileAcompanhamento()" />
       </v-list>
     </v-navigation-drawer>
 
@@ -67,68 +63,81 @@
   </v-app>
 </template>
 
-<script setup>
-import { computed, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useDisplay } from 'vuetify'
+<script setup lang="ts">
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useDisplay } from "vuetify";
 import { useActiveProject } from "./composables/useActiveProject";
 
 const { activeProjectId, options, setActiveProject } = useActiveProject();
 
-const route = useRoute()
-const router = useRouter()
-const { mobile } = useDisplay()
+const route = useRoute();
+const router = useRouter();
+const { mobile } = useDisplay();
 
-const drawer = ref(false)
-
-// ===== SELECT DE OBRAS =====
-const projectOptions = [
-  { id: 'BAT01', label: 'Batalhão', subtitle: 'Sec. de Educação • #2023-8841' },
-  // { id: 'OUT01', label: 'Outra Obra', subtitle: '...' },
-]
-
-const selectedProjectId = ref(projectOptions[0].id)
-
-function onProjectChange(id) {
-  // aqui no futuro você pode:
-  // - atualizar um store (Pinia)
-  // - mudar rota (?project=BAT01)
-  // - disparar reload de dados
-  console.log('Projeto selecionado:', id)
-}
-
-// ===== MOBILE =====
-const isMobile = computed(() => mobile.value)
+const drawer = ref(false);
+const isMobile = computed(() => mobile.value);
 
 // ===== TABS =====
 const currentTab = computed({
   get() {
-    if (route.name === 'projetos') return 'projetos'
-    if (route.name === 'acompanhamento') return 'acompanhamento'
-    return 'home'
+    if (route.path.startsWith("/projetos")) return "projetos";
+    if (route.path.startsWith("/acompanhamento")) return "acompanhamento";
+    return "home";
   },
   set() { },
-})
+});
 
-// ===== NAVEGAÇÃO =====
-function goTo(path) {
-  if (route.path !== path) router.push(path)
+// ===== HELPERS =====
+function acompanhamentoPathFor(projectId: string) {
+  return `/acompanhamento/${projectId}`;
 }
 
-function navigateMobile(path) {
-  drawer.value = false
-  if (route.path !== path) router.push(path)
+function osPathFor(projectId: string) {
+  return `/acompanhamento/${projectId}/os`;
+}
+
+// ===== SELECT =====
+function onSelectProject(id: string) {
+  setActiveProject(id);
+
+  // Se estiver dentro do módulo de acompanhamento, mantém o contexto ao trocar
+  if (route.path.startsWith("/acompanhamento")) {
+    const goingToOs = route.path.endsWith("/os");
+    router.push(goingToOs ? osPathFor(id) : acompanhamentoPathFor(id));
+  }
+}
+
+// ===== NAVEGAÇÃO =====
+function goTo(path: string) {
+  if (route.path !== path) router.push(path);
+}
+
+function goToAcompanhamento() {
+  const id = String(activeProjectId.value || options[0]?.id || "BAT01");
+  const target = acompanhamentoPathFor(id);
+  if (route.path !== target) router.push(target);
+}
+
+function navigateMobile(path: string) {
+  drawer.value = false;
+  if (route.path !== path) router.push(path);
+}
+
+function navigateMobileAcompanhamento() {
+  drawer.value = false;
+  goToAcompanhamento();
 }
 </script>
 
 <style scoped>
 .v-select {
-  font-family: 'Montserrat';
+  font-family: "Montserrat";
 }
 
 .v-tabs,
 .v-list-item {
-  font-family: 'Montserrat';
+  font-family: "Montserrat";
   font-weight: 800;
 }
 
@@ -151,7 +160,7 @@ function navigateMobile(path) {
 }
 
 .mdi-close {
-  color: black
+  color: black;
 }
 
 /* harmoniza o select com a app-bar */

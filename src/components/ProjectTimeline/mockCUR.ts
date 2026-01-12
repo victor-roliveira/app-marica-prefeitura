@@ -5,7 +5,7 @@ export const curvaMock: ProjectTimelineData = {
         project_id: "CUR02",
         name_project: "Curva Di Branco",
         overall_percent: 60,
-         start_date: "2025-05-01",
+        start_date: "2025-05-01",
         end_date: "2027-10-02",
         inauguration_date: "2027-10-02",
         status: "Em andamento",
@@ -41,9 +41,63 @@ export const curvaMock: ProjectTimelineData = {
     ],
 
     alterations: [
-        { project_id: "CUR02", change_number: 1, change_date: "2025-08-15", impact_start_date: "2025-08-15", impact_end_date: "2025-10-25", description: "Atraso por ajuste de escopo", step_impact_id: "ET03", start_impact: false, end_impact: true, new_end_date: "2025-12-10", change_color: "#FF9800", icon: "⏸️" },
-        { project_id: "CUR02", change_number: 2, change_date: "2025-11-15", impact_start_date: "2025-11-16", impact_end_date: "2026-04-05", description: "Revisão orçamentária solicitada", step_impact_id: "ET05", start_impact: true, end_impact: true, new_start_date: "2025-11-10", new_end_date: "2026-08-01", change_color: "#FF9800", icon: "⏸️" },
-        { project_id: "CUR02", change_number: 3, change_date: "2026-02-20", impact_start_date: "2026-01-26", impact_end_date: "2026-03-05", description: "Ajuste de cronograma por licitação", step_impact_id: "ET06", start_impact: false, end_impact: true, new_end_date: "2026-06-30", change_color: "#FF9800", icon: "⏸️" },
+        {
+            project_id: "CUR02",
+            change_number: 1,
+            change_date: "2025-08-15",
+            impact_start_date: "2025-08-15",
+            impact_end_date: "2025-10-25",
+            description: "Atraso por ajuste de escopo",
+
+            step_impact_id: "ET03",
+            step_impact_ids: ["ET03"],
+
+            start_impact: false,
+            end_impact: true,
+            new_end_date: "2025-12-10",
+
+            change_color: "#FF9800",
+            icon: "⏸️",
+        },
+        {
+            project_id: "CUR02",
+            change_number: 2,
+            change_date: "2025-11-15",
+            impact_start_date: "2025-11-16",
+            impact_end_date: "2026-04-05",
+            description: "Revisão orçamentária solicitada",
+
+            step_impact_id: "ET05",
+            step_impact_ids: ["ET05"],
+
+            start_impact: true,
+            end_impact: true,
+            new_start_date: "2025-11-10",
+            new_end_date: "2026-08-01",
+
+            change_color: "#FF9800",
+            icon: "⏸️",
+        },
+        {
+            project_id: "CUR02",
+            change_number: 3,
+            change_date: "2026-02-20",
+            impact_start_date: "2026-01-26",
+            impact_end_date: "2026-03-05",
+            description: "Ajuste de cronograma por licitação",
+
+            step_impact_id: "ET06",
+            step_impact_ids: ["ET06"],
+
+            start_impact: false,
+            end_impact: true,
+
+            // Ajustado para atraso (baseline ET06 era 2026-10-01)
+            new_end_date: "2026-11-15",
+
+            change_color: "#FF9800",
+            icon: "⏸️",
+        },
     ],
 
     config: {

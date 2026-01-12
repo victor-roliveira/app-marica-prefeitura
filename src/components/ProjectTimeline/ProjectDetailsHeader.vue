@@ -2,14 +2,14 @@
     <div class="pd-wrap">
         <!-- HEADER -->
         <div class="pd-header">
-            <!-- Linha 1: Título + Relatória -->
+            <!-- Linha 1: Título + Relatório -->
             <div class="pd-row1">
                 <h1 class="pd-title">{{ vm.title }}</h1>
 
-                <v-btn v-if="vm.actions?.onReport" class="pd-report-btn" rounded="xl" size="small" variant="flat"
-                    @click="vm.actions.onReport()">
-                    <v-icon start size="18">{{ vm.actions.reportIcon ?? "mdi-sparkles" }}</v-icon>
-                    {{ vm.actions.reportLabel ?? "RELATÓRIA" }}
+                <v-btn v-if="hasReportAction" class="pd-report-btn" rounded="xl" size="small" variant="flat"
+                    @click="handleReport()">
+                    <v-icon start size="18">{{ vm.actions?.reportIcon ?? "mdi-sparkles" }}</v-icon>
+                    {{ vm.actions?.reportLabel ?? "Relatório" }}
                 </v-btn>
             </div>
 
@@ -22,10 +22,9 @@
                     </v-chip>
                 </div>
 
-                <v-btn v-if="vm.actions?.onOsObject" class="pd-oslink" variant="text" size="small"
-                    @click="vm.actions.onOsObject()">
-                    <v-icon start size="18">{{ vm.actions.osObjectIcon ?? "mdi-file-document-outline" }}</v-icon>
-                    {{ vm.actions.osObjectLabel ?? "OBJETO DA OS" }}
+                <v-btn v-if="hasOsAction" class="pd-oslink" variant="text" size="small" @click="handleOsObject()">
+                    <v-icon start size="18">{{ vm.actions?.osObjectIcon ?? "mdi-file-document-outline" }}</v-icon>
+                    {{ vm.actions?.osObjectLabel ?? "Objeto da OS" }}
                 </v-btn>
             </div>
 
@@ -80,20 +79,23 @@
                     </div>
                 </div>
 
-                <!-- bolha decorativa (canto sup. direito) -->
+                <!-- bolha decorativa -->
                 <div class="pd-blob" />
             </div>
 
-            <!-- Status geral -->
+            <!-- Saúde do projeto -->
             <div class="pd-card">
                 <div class="pd-iconbox pd-iconbox-red">
                     <v-icon size="22">mdi-hospital-box</v-icon>
                 </div>
 
                 <div class="pd-meta">
-                    <div class="pd-label">{{ vm.kpis.overallStatusLabel ?? "STATUS GERAL" }}</div>
-                    <div class="pd-value pd-status-risk">
-                        {{ vm.kpis.overallStatus }}
+                    <!-- FIX: label correto -->
+                    <div class="pd-label">{{ vm.kpis.overallHealthLabel ?? "STATUS GERAL" }}</div>
+
+                    <!-- cor dinâmica -->
+                    <div class="pd-value" :class="overallHealthClass">
+                        {{ vm.kpis.overallHealth }}
                     </div>
                 </div>
             </div>
@@ -102,9 +104,34 @@
 </template>
 
 <script setup lang="ts">
-import type { ProjectDetailsViewModel } from './projectDetailsTypes';
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+import type { ProjectDetailsViewModel } from "./projectDetailsTypes";
 
+const router = useRouter();
 const props = defineProps<{ vm: ProjectDetailsViewModel }>();
+
+const hasReportAction = computed(() => Boolean(props.vm.actions?.reportRoute || props.vm.actions?.onReport));
+const hasOsAction = computed(() => Boolean(props.vm.actions?.osObjectRoute || props.vm.actions?.onOsObject));
+
+function handleReport() {
+    const route = props.vm.actions?.reportRoute;
+    if (route) return router.push(route);
+    props.vm.actions?.onReport?.();
+}
+
+function handleOsObject() {
+    const route = props.vm.actions?.osObjectRoute;
+    if (route) return router.push(route);
+    props.vm.actions?.onOsObject?.();
+}
+
+const overallHealthClass = computed(() => {
+    const v = props.vm.kpis.overallHealth;
+    if (v === "Em Dia") return "pd-status-ok";
+    if (v === "Em Risco") return "pd-status-risk";
+    return "pd-status-crit"; // Crítico
+});
 
 function fmtDate(iso: string) {
     const [y, m, d] = (iso ?? "").split("-");
@@ -128,10 +155,9 @@ function formatDelayNumber(days: number) {
 </script>
 
 <style scoped>
-/* ====== Tokens (cores iguais ao print) ====== */
 .pd-wrap {
     padding: 8px 0 4px;
-    font-family: 'Montserrat';
+    font-family: "Montserrat";
 }
 
 .pd-header {
@@ -166,7 +192,6 @@ function formatDelayNumber(days: number) {
     gap: 10px;
 }
 
-/* chips cinza claro */
 .pd-chip {
     background: #eef2f6;
     color: #2c3a4b;
@@ -174,17 +199,14 @@ function formatDelayNumber(days: number) {
     border-radius: 999px;
 }
 
-/* botão azul "Relatória" */
 .pd-report-btn {
     background: #2563eb;
-    /* azul do print */
     color: #ffffff;
     font-weight: 400;
     letter-spacing: 0.2px;
     text-transform: none;
 }
 
-/* link "Objeto da OS" azul */
 .pd-oslink {
     color: gray;
     font-weight: 600;
@@ -207,7 +229,6 @@ function formatDelayNumber(days: number) {
     text-transform: uppercase;
 }
 
-/* ====== KPIs grid ====== */
 .pd-kpis {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -220,9 +241,7 @@ function formatDelayNumber(days: number) {
     border-radius: 16px;
     background: #ffffff;
     border: 1px solid #eef2f6;
-    box-shadow:
-        0 1px 0 rgba(12, 16, 24, 0.06),
-        0 8px 18px rgba(12, 16, 24, 0.05);
+    box-shadow: 0 1px 0 rgba(12, 16, 24, 0.06), 0 8px 18px rgba(12, 16, 24, 0.05);
     padding: 14px 14px;
     min-height: 96px;
     display: flex;
@@ -230,7 +249,6 @@ function formatDelayNumber(days: number) {
     gap: 12px;
 }
 
-/* ícone em quadrado cinza */
 .pd-iconbox {
     width: 44px;
     height: 44px;
@@ -241,7 +259,6 @@ function formatDelayNumber(days: number) {
     color: #0b1220;
 }
 
-/* variações do ícone (para ficar idêntico ao print) */
 .pd-iconbox-green {
     background: #eefaf2;
     color: #16a34a;
@@ -265,12 +282,11 @@ function formatDelayNumber(days: number) {
 }
 
 .pd-label {
-    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.6px;
     text-transform: uppercase;
     color: #67768b;
-        font-size: 10px;
+    font-size: 10px;
 }
 
 .pd-value {
@@ -280,7 +296,6 @@ function formatDelayNumber(days: number) {
     line-height: 1.1;
 }
 
-/* Tag "On Track" */
 .pd-tag {
     position: absolute;
     right: 12px;
@@ -293,7 +308,6 @@ function formatDelayNumber(days: number) {
     border-radius: 999px;
 }
 
-/* atraso: +14 vermelho e "dias" cinza */
 .pd-delay-num {
     color: #ef4444;
     font-weight: 900;
@@ -306,12 +320,19 @@ function formatDelayNumber(days: number) {
     font-size: 14px;
 }
 
-/* Status geral (Em Risco em vermelho) */
+/* cores dinâmicas da saúde */
+.pd-status-ok {
+    color: #16a34a;
+}
+
 .pd-status-risk {
     color: #ef4444;
 }
 
-/* bolha decorativa (card “Dias de atraso”) */
+.pd-status-crit {
+    color: #b91c1c;
+}
+
 .pd-card-warn {
     overflow: hidden;
 }
@@ -326,7 +347,6 @@ function formatDelayNumber(days: number) {
     background: rgba(245, 158, 11, 0.18);
 }
 
-/* Responsivo (mantém 2 colunas no print; cai para 1 em telas bem pequenas) */
 @media (max-width: 360px) {
     .pd-kpis {
         grid-template-columns: 1fr;

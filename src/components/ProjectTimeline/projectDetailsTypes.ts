@@ -1,6 +1,7 @@
 // projectDetailsTypes.ts
 import type { ISODate } from "./types";
 
+/** ====== Saúde / KPIs ====== */
 export type HealthStatus = "Em Dia" | "Em Risco" | "Crítico";
 
 export interface ProjectDetailsHeaderChip {
@@ -9,12 +10,16 @@ export interface ProjectDetailsHeaderChip {
 }
 
 export interface ProjectDetailsActions {
+  // Ação: Relatório
   reportLabel?: string;
   reportIcon?: string;
+  reportRoute?: string;
   onReport?: () => void;
 
+  // Ação: Objeto da OS / Escopo
   osObjectLabel?: string;
   osObjectIcon?: string;
+  osObjectRoute?: string;
   onOsObject?: () => void;
 }
 
@@ -29,18 +34,50 @@ export interface ProjectDetailsKpis {
   delayDaysLabel?: string;
   delayDays: number;
 
-  overallStatusLabel?: string;
-  overallStatus: HealthStatus;
+  overallHealthLabel?: string;
+  overallHealth: HealthStatus;
 }
 
-/**
- * VIEWMODEL DO HEADER (SEM SELECT)
- * O select fica na AppBar, então o header não precisa dessas props.
- */
 export interface ProjectDetailsViewModel {
   title: string;
   updatedText?: string;
+  updatedAt?: ISODate;
+
   chips?: ProjectDetailsHeaderChip[];
   actions?: ProjectDetailsActions;
   kpis: ProjectDetailsKpis;
+}
+
+/** ====== OS (Objeto da OS) ====== */
+export type OsStatus = "Ativa" | "Inativa" | "Encerrada";
+export type ContractMilestoneStatus = "OK" | "Em atraso" | "Atenção";
+
+export interface ProjectOsData {
+  summary: {
+    title: string;
+    osCode: string;
+    status: OsStatus;
+    requester: string;
+    durationText: string;
+    contractStart: ISODate;
+    expectedEnd: ISODate;
+  };
+  objectText: string;
+  scope: {
+    includes: string[];
+    excludes: string[];
+  };
+  contractMilestones: Array<{
+    id: string;
+    title: string;
+    linkText?: string;
+    status: ContractMilestoneStatus;
+  }>;
+  expectedProducts: Array<{
+    id: string;
+    title: string;
+    subtitle?: string;
+    icon?: string;
+  }>;
+  notes: string[];
 }

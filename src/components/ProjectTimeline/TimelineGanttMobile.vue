@@ -178,7 +178,6 @@ const props = defineProps<{
 
 const heightPx = computed(() => props.heightPx ?? 440);
 
-/* modal state */
 const milestoneDialog = ref(false);
 const selectedMilestone = ref<Milestone | null>(null);
 const changeDialog = ref(false);
@@ -248,7 +247,6 @@ function normalizeRange(start: ISODate, end: ISODate): { start: ISODate; end: IS
     return { start, end };
 }
 
-/* range principal */
 const rangeStart = computed<ISODate>(() => {
     const earliest = [...props.milestones].sort(
         (a, b) => toLocalMiddayTime(a.milestone_date) - toLocalMiddayTime(b.milestone_date)
@@ -273,7 +271,6 @@ function y(dateIso: ISODate): number {
     return padTop + ratio(dateIso) * usable;
 }
 
-/* ranges por etapa */
 const rangeByStage = computed<Record<string, { start: ISODate; end: ISODate } | undefined>>(() => {
     const map: Record<string, { start: ISODate; end: ISODate } | undefined> = {};
 
@@ -317,7 +314,6 @@ function blockStyle(stepId: string, color: string) {
     };
 }
 
-/* progressByStep + extensionsByStage (mantido) */
 type ImpactInterval = {
     key: string;
     stepId: string;
@@ -352,7 +348,6 @@ function addDays(dateIso: ISODate, days: number): ISODate {
 const extensionsByStage = computed<Record<string, ExtensionInterval[]>>(() => {
     const map: Record<string, ExtensionInterval[]> = {};
 
-    // agrupar alterações por etapa
     const byStage: Record<string, any[]> = {};
     for (const a of props.alterations as any[]) {
         const stepId = String(a.step_impact_id);
@@ -362,12 +357,9 @@ const extensionsByStage = computed<Record<string, ExtensionInterval[]>>(() => {
     for (const stepId of Object.keys(byStage)) {
         const p = progressByStep.value[stepId];
         if (!p?.step_end_date) continue;
-
-        // "cursor" começa no término baseline da etapa
         let cursorEnd: ISODate = p.step_end_date;
 
         const changes = byStage[stepId]
-            // precisa ter intervalo de impacto OU uma forma alternativa de calcular duração
             .filter((a) => (a.impact_start_date && a.impact_end_date) || a.duration_days)
             .sort((a, b) => toLocalMiddayTime(a.change_date) - toLocalMiddayTime(b.change_date));
 
@@ -389,7 +381,6 @@ const extensionsByStage = computed<Record<string, ExtensionInterval[]>>(() => {
                 title: `Alteração ${a.change_number}: +${duration} dias — ${a.description ?? ""}`.trim(),
             });
 
-            // próximo atraso começa após este atraso
             cursorEnd = end;
         }
     }
@@ -492,7 +483,6 @@ const selectedChangeImpactRange = computed<{ start: ISODate; end: ISODate } | nu
     return found ? { start: found.start, end: found.end } : null;
 });
 
-/* ======= NOVO: linhas dot término → barra (com suporte a scroll horizontal) ======= */
 const stagesEl = ref<HTMLElement | null>(null);
 const stagesScrollLeft = ref(0);
 
@@ -520,20 +510,17 @@ const stepIndexById = computed<Record<string, number>>(() => {
 type StepEndLine = { key: string; top: number; left: number; width: number };
 
 const stepEndLines = computed<StepEndLine[]>(() => {
-    // Medidas precisam espelhar seu CSS:
-    const axisColW = 26;     // gm-root grid col 1
-    const rootGap = 10;      // gm-root gap
+    const axisColW = 26;
+    const rootGap = 10;
 
-    const trackInaugW = 22;  // gm-track col 1
-    const trackGap = 10;     // gm-track gap
+    const trackInaugW = 22;
+    const trackGap = 10;
 
-    const colW = 18;         // --stage-col-width
-    const gap = 10;          // --stage-gap
+    const colW = 18;
+    const gap = 10;
 
-    // centro do dot no TimelineAxis (guide left 12px, dot left 7px ~ 13px)
     const axisCenterX = 13;
 
-    // início do "miolo" das etapas (dentro do grid total)
     const stagesStartX = axisColW + rootGap + trackInaugW + trackGap;
 
     const lines: StepEndLine[] = [];
@@ -544,7 +531,6 @@ const stepEndLines = computed<StepEndLine[]>(() => {
         const idx = stepIndexById.value[p.step_id];
         if (idx === undefined) continue;
 
-        // centro da coluna da etapa, compensando scroll horizontal
         const stageCenterX =
             stagesStartX +
             idx * (colW + gap) +
@@ -580,7 +566,6 @@ const stepEndLines = computed<StepEndLine[]>(() => {
     min-width: 0;
 
     position: relative;
-    /* necessário para gm-endlines absolute */
 }
 
 .gm-endlines {
@@ -663,7 +648,6 @@ const stepEndLines = computed<StepEndLine[]>(() => {
     right: 0;
     border-radius: 2px;
     z-index: 3;
-    /* acima das linhas */
     opacity: 0.95;
 }
 
