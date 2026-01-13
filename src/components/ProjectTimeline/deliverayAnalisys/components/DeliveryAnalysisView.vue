@@ -92,7 +92,7 @@
 
                 <v-card class="card" rounded="xl" elevation="2">
                     <v-card-text class="card-body">
-                        <PlannedRealizedBars :vm="vm.plannedRealized" />
+                        <PlannedRealizedChart :vm="vm.plannedRealized" />
                     </v-card-text>
                 </v-card>
             </div>
@@ -106,31 +106,21 @@ import { useRoute, useRouter } from "vue-router";
 
 import ImpactDonutChart from "./charts/ImpactDonutChart.vue";
 
-import PlannedRealizedBars from "./PlannedRealizedBars.vue";
-
 import type { DeliveryAnalysisViewModel, DeliveryStatusTone } from "../types";
 import { deliveryAnalysisMockByProjectId, deliveryAnalysisFallbackMock } from "../mock"; 
+import PlannedRealizedChart from "./PlannedRealizedChart.vue";
 
 const route = useRoute();
 const router = useRouter();
 
 const projectId = computed(() => String(route.params.projectId ?? ""));
 
-/**
- * VM por projeto:
- * - usa projectId (rota)
- * - fallback se não houver mock definido para o projeto
- */
 const vm = computed<DeliveryAnalysisViewModel>(() => {
     return deliveryAnalysisMockByProjectId[projectId.value] ?? deliveryAnalysisFallbackMock;
 });
 
 function onBack() {
-    // Volta para a tela anterior (normalmente /acompanhamento/:projectId)
     router.back();
-
-    // Se você preferir voltar sempre para o acompanhamento do mesmo projeto, use:
-    // router.push({ name: "acompanhamento", params: { projectId: projectId.value } });
 }
 
 function clamp(v: number) {
@@ -138,7 +128,6 @@ function clamp(v: number) {
 }
 
 function toneClass(t: DeliveryStatusTone) {
-    // IMPORTANTE: manter igual aos seus types: "critical" | "risk" | "ok"
     return t === "critical" ? "t-critical" : t === "risco" ? "t-risco" : "t-ok";
 }
 

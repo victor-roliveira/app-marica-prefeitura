@@ -18,8 +18,8 @@ echarts.use([PieChart, TooltipComponent, LegendComponent, CanvasRenderer]);
 
 const props = defineProps<{
     items: ImpactDistributionItemVm[];
-    totalPctLabel: string; // ex.: "100%"
-    subtitle: string;      // ex.: "IMPACTO"
+    totalPctLabel: string; 
+    subtitle: string;      
 }>();
 
 function colorByKey(k: ImpactColorKey) {
@@ -37,7 +37,6 @@ const seriesData = computed(() =>
     }))
 );
 
-// Mapa rápido label -> pct (para formatter)
 const pctByLabel = computed(() => {
     const m = new Map<string, number>();
     for (const it of props.items) m.set(it.label, it.pct);
@@ -139,7 +138,6 @@ const option = computed(() => ({
 .chart-root {
     width: 100%;
     height: 170px;
-    /* um pouco maior para caber % na legenda */
 }
 
 .chart {
