@@ -12,14 +12,16 @@ export const batalhaoMock: ProjectTimelineData = {
     },
 
     stages: [
-        { step_id: "ET01", step_name: "Plano de Trabalho", view_order: 1, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
-        { step_id: "ET02", step_name: "Arquitetura", view_order: 2, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
-        { step_id: "ET03", step_name: "Engenharia", view_order: 3, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
-        { step_id: "ET04", step_name: "Orçamento", view_order: 4, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
-        { step_id: "ET05", step_name: "Modelagem", view_order: 5, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
-        { step_id: "ET06", step_name: "Validação", view_order: 6, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
-        { step_id: "ET07", step_name: "Licitação", view_order: 7, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
-        { step_id: "ET08", step_name: "Obra", view_order: 8, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET01", step_name: "Geral", view_order: 1, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET02", step_name: "Plano de Trabalho", view_order: 1, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET03", step_name: "Serviço de Campo", view_order: 1, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET04", step_name: "Arquitetura", view_order: 2, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET05", step_name: "Engenharia", view_order: 3, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET06", step_name: "Orçamento", view_order: 4, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET07", step_name: "Mod. Eco-Fin", view_order: 5, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET08", step_name: "Mod. Jur-Reg", view_order: 6, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET09", step_name: "Licitação", view_order: 7, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
+        { step_id: "ET10", step_name: "Obra", view_order: 8, orientation_text: "vertical", checked_icon: "✅", default_color: "#2196F3" },
     ],
 
     progress: [
@@ -29,10 +31,10 @@ export const batalhaoMock: ProjectTimelineData = {
         { project_id: "BAT01", step_id: "ET04", advance_percent: 60, step_start_date: "2025-09-01", step_end_date: "2026-02-20", show_percent: true, completed: false },
         { project_id: "BAT01", step_id: "ET05", advance_percent: 40, step_start_date: "2025-11-01", step_end_date: "2026-07-01", show_percent: true, completed: false },
         { project_id: "BAT01", step_id: "ET06", advance_percent: 20, step_start_date: "2026-01-15", step_end_date: "2026-10-01", show_percent: true, completed: false },
-
-        // Ajustado para não conflitar com "Obra" e para casar com o fim do projeto
-        { project_id: "BAT01", step_id: "ET07", advance_percent: 0, step_start_date: "2026-10-01", step_end_date: "2027-02-01", show_percent: true, completed: false },
+        { project_id: "BAT01", step_id: "ET07", advance_percent: 30, step_start_date: "2026-10-01", step_end_date: "2027-02-01", show_percent: true, completed: false },
         { project_id: "BAT01", step_id: "ET08", advance_percent: 0, step_start_date: "2027-02-01", step_end_date: "2027-10-02", show_percent: true, completed: false },
+        { project_id: "BAT01", step_id: "ET09", advance_percent: 20, step_start_date: "2026-01-15", step_end_date: "2026-10-01", show_percent: true, completed: false },
+        { project_id: "BAT01", step_id: "ET10", advance_percent: 20, step_start_date: "2026-01-15", step_end_date: "2026-10-01", show_percent: true, completed: false },
     ],
 
     milestones: [

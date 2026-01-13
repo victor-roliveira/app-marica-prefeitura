@@ -80,10 +80,12 @@ function shouldShowPercent(etapaId: string): boolean {
 .ts-root {
   display: flex;
   align-items: flex-end;
-  gap: var(--stage-gap, 8px);   /* antes: 10px */
+  gap: 7px;  /* antes: 10px */
   overflow-x: auto;
   padding-bottom: 2px;
   font-family: 'Montserrat';
+  width: 400px;
+  margin-top: 20px;
 }
 
 .ts-col {
