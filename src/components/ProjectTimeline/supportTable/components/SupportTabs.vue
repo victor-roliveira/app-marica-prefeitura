@@ -34,7 +34,7 @@ const tabItems: { key: SupportTabKey; label: string }[] = [
     gap: 10px;
     align-items: center;
     overflow-x: auto;
-    padding-bottom: 2px;
+    padding-bottom: 15px;
 }
 
 .tab {
@@ -43,5 +43,6 @@ const tabItems: { key: SupportTabKey; label: string }[] = [
     letter-spacing: 0.2px;
     border-radius: 999px;
     white-space: nowrap;
+    border: 2px solid gray
 }
 </style>

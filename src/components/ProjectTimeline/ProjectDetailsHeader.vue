@@ -296,6 +296,7 @@ function formatDelayNumber(days: number) {
     width: 44px;
     height: 44px;
     border-radius: 12px;
+    padding: 10px;
     background: #f3f5f8;
     display: grid;
     place-items: center;
@@ -329,11 +330,11 @@ function formatDelayNumber(days: number) {
     letter-spacing: 0.6px;
     text-transform: uppercase;
     color: #67768b;
-    font-size: 10px;
+    font-size: 8px;
 }
 
 .pd-value {
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 900;
     color: #0b1220;
     line-height: 1.1;
