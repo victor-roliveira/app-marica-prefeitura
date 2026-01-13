@@ -56,7 +56,9 @@
 
 
             <!-- Avanço físico -->
-            <div class="pd-card">
+            <button type="button" class="pd-card pd-card-clickable" @click="goToPhysicalProgress"
+                @keydown.enter.prevent="goToPhysicalProgress" @keydown.space.prevent="goToPhysicalProgress"
+                aria-label="Abrir Avanço Físico">
                 <div class="pd-iconbox pd-iconbox-green">
                     <v-icon size="22">mdi-trending-up</v-icon>
                 </div>
@@ -69,7 +71,10 @@
                 <div v-if="vm.kpis.physicalTag" class="pd-tag">
                     {{ vm.kpis.physicalTag }}
                 </div>
-            </div>
+
+                <v-icon class="pd-chev" size="18">mdi-chevron-right</v-icon>
+            </button>
+
 
             <!-- Dias de atraso -->
             <div class="pd-card pd-card-warn">
@@ -128,6 +133,12 @@ function goToDeliveryAnalysis() { // NEW
         name: "project-delivery-analysis",
         params: { projectId: projectId.value },
     });
+}
+
+function goToPhysicalProgress() {
+    const projectId = String(route.params.projectId ?? "");
+    if (!projectId) return;
+    router.push({ name: "project-physical-progress", params: { projectId } });
 }
 
 function handleReport() {

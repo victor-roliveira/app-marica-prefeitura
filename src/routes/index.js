@@ -4,6 +4,7 @@ import HomeView from "../views/HomeView.vue";
 import TimelineView from "../views/TimelineComponent/TimelineView.vue";
 import OsObjectView from "../components/ProjectTimeline/OsObjectView.vue";
 import DeliveryAnalysisView from "../components/ProjectTimeline/deliverayAnalisys/components/DeliveryAnalysisView.vue";
+import PhysicalProgressView from "../components/ProjectTimeline/physicalProgress/components/PhysicalProgressView.vue";
 
 
 const routes = [
@@ -20,8 +21,12 @@ const routes = [
     path: "/projetos/:projectId/analise-entrega",
     name: "project-delivery-analysis",
     component: DeliveryAnalysisView,
+  },
+  {
+    path: "/projetos/:projectId/avanco-fisico",
+    name: "project-physical-progress",
+    component: PhysicalProgressView
   }
-
 ];
 
 const router = createRouter({

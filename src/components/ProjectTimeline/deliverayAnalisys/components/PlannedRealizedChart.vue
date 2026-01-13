@@ -111,7 +111,7 @@ const option = computed(() => ({
             barWidth: 10,
             barGap: "60%",
             itemStyle: {
-                color: "#eef2f8",
+                color: "#bdc8fd",
                 borderRadius: [6, 6, 6, 6],
             },
             emphasis: { focus: "series" },
