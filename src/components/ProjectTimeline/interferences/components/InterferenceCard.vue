@@ -141,7 +141,7 @@ function sevChipClass(s: InterferenceSeverity) {
 .it-title {
     margin-top: 10px;
     font-size: 13px;
-    font-weight: 900;
+    font-weight: 500;
     color: #0e1730;
     line-height: 1.25;
 }

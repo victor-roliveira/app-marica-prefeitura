@@ -6,17 +6,33 @@ import OsObjectView from "../components/ProjectTimeline/OsObjectView.vue";
 import DeliveryAnalysisView from "../components/ProjectTimeline/deliverayAnalisys/components/DeliveryAnalysisView.vue";
 import PhysicalProgressView from "../components/ProjectTimeline/physicalProgress/components/PhysicalProgressView.vue";
 import InterferencesView from "../components/ProjectTimeline/interferences/components/InterferencesView.vue";
+import SupportTableView from "../components/ProjectTimeline/supportTable/components/SupportTableView.vue";
 
 
 const routes = [
-  { path: "/", name: "home", component: HomeView },
-  { path: "/projetos", name: "projetos", component: ProjectsView },
+  {
+     path: "/", 
+     name: "home", 
+     component: HomeView 
+  },
 
-  // Acompanhamento por projeto
-  { path: "/acompanhamento/:projectId", name: "acompanhamento", component: TimelineView },
+  { 
+    path: "/projetos", 
+    name: "projetos", 
+    component: ProjectsView 
+  },
 
-  // Tela Objeto da OS
-  { path: "/acompanhamento/:projectId/os", name: "objeto-os", component: OsObjectView },
+  { 
+    path: "/acompanhamento/:projectId", 
+    name: "acompanhamento", 
+    component: TimelineView 
+  },
+
+  { 
+    path: "/acompanhamento/:projectId/os", 
+    name: "objeto-os", 
+    component: OsObjectView 
+  },
 
   {
     path: "/projetos/:projectId/analise-entrega",
@@ -32,6 +48,11 @@ const routes = [
     path: "/projetos/:projectId/interferencias",
     name: "project-interferences",
     component: InterferencesView
+  },
+  {
+    path: "/projetos/:projectId/tabela-apoio",
+    name: "project-support-table",
+    component: SupportTableView
   }
 ];
 

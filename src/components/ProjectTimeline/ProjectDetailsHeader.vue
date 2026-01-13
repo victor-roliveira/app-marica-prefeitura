@@ -96,23 +96,24 @@
                 <v-icon class="pd-chev" size="18">mdi-chevron-right</v-icon>
             </button>
 
-
             <!-- Saúde do projeto -->
-            <div class="pd-card">
+            <button type="button" class="pd-card pd-card-clickable" @click="goToSupportTable"
+                @keydown.enter.prevent="goToSupportTable" @keydown.space.prevent="goToSupportTable"
+                aria-label="Abrir Tabela de Apoio">
                 <div class="pd-iconbox pd-iconbox-red">
                     <v-icon size="22">mdi-hospital-box</v-icon>
                 </div>
 
                 <div class="pd-meta">
-                    <!-- FIX: label correto -->
                     <div class="pd-label">{{ vm.kpis.overallHealthLabel ?? "STATUS GERAL" }}</div>
-
-                    <!-- cor dinâmica -->
                     <div class="pd-value" :class="overallHealthClass">
                         {{ vm.kpis.overallHealth }}
                     </div>
                 </div>
-            </div>
+
+                <v-icon class="pd-chev" size="18">mdi-chevron-right</v-icon>
+            </button>
+
         </div>
     </div>
 </template>
@@ -148,6 +149,12 @@ function goToInterferences() {
     const projectId = String(route.params.projectId ?? "");
     if (!projectId) return;
     router.push({ name: "project-interferences", params: { projectId } });
+}
+
+function goToSupportTable() {
+    const projectId = String(route.params.projectId ?? "");
+    if (!projectId) return;
+    router.push({ name: "project-support-table", params: { projectId } });
 }
 
 function handleReport() {

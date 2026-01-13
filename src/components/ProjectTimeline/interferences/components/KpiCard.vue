@@ -53,6 +53,7 @@ function toneIconClass(t: Tone) {
     font-size: 28px;
     font-weight: 900;
     color: #0e1730;
+    text-align: center;
 }
 
 .kpi-sub {
@@ -60,6 +61,7 @@ function toneIconClass(t: Tone) {
     font-size: 12px;
     color: #93a1b4;
     font-weight: 700;
+    text-align: center;
 }
 
 .t-ok {
