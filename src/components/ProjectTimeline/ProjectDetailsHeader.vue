@@ -77,7 +77,9 @@
 
 
             <!-- Dias de atraso -->
-            <div class="pd-card pd-card-warn">
+            <button type="button" class="pd-card pd-card-warn pd-card-clickable" @click="goToInterferences"
+                @keydown.enter.prevent="goToInterferences" @keydown.space.prevent="goToInterferences"
+                aria-label="Abrir Interferências">
                 <div class="pd-iconbox pd-iconbox-warn">
                     <v-icon size="22">mdi-alert</v-icon>
                 </div>
@@ -90,9 +92,10 @@
                     </div>
                 </div>
 
-                <!-- bolha decorativa -->
                 <div class="pd-blob" />
-            </div>
+                <v-icon class="pd-chev" size="18">mdi-chevron-right</v-icon>
+            </button>
+
 
             <!-- Saúde do projeto -->
             <div class="pd-card">
@@ -139,6 +142,12 @@ function goToPhysicalProgress() {
     const projectId = String(route.params.projectId ?? "");
     if (!projectId) return;
     router.push({ name: "project-physical-progress", params: { projectId } });
+}
+
+function goToInterferences() {
+    const projectId = String(route.params.projectId ?? "");
+    if (!projectId) return;
+    router.push({ name: "project-interferences", params: { projectId } });
 }
 
 function handleReport() {

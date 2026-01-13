@@ -5,6 +5,7 @@ import TimelineView from "../views/TimelineComponent/TimelineView.vue";
 import OsObjectView from "../components/ProjectTimeline/OsObjectView.vue";
 import DeliveryAnalysisView from "../components/ProjectTimeline/deliverayAnalisys/components/DeliveryAnalysisView.vue";
 import PhysicalProgressView from "../components/ProjectTimeline/physicalProgress/components/PhysicalProgressView.vue";
+import InterferencesView from "../components/ProjectTimeline/interferences/components/InterferencesView.vue";
 
 
 const routes = [
@@ -26,6 +27,11 @@ const routes = [
     path: "/projetos/:projectId/avanco-fisico",
     name: "project-physical-progress",
     component: PhysicalProgressView
+  },
+  {
+    path: "/projetos/:projectId/interferencias",
+    name: "project-interferences",
+    component: InterferencesView
   }
 ];
 

@@ -5,9 +5,6 @@
                 <v-icon>mdi-arrow-left</v-icon>
             </v-btn>
             <div class="topbar-title">{{ vm.header.title }}</div>
-            <v-btn icon variant="text">
-                <v-icon>mdi-menu</v-icon>
-            </v-btn>
         </div>
 
         <div class="content">
