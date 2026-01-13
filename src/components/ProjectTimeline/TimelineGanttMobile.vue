@@ -632,6 +632,7 @@ const stepEndLines = computed<StepEndLine[]>(() => {
     align-items: flex-start;
     overflow-x: auto;
     padding-right: 4px;
+    width: 500px;
 }
 
 .gm-stage-col {
