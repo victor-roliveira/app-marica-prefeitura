@@ -1,6 +1,6 @@
 <template>
     <div class="ta-root">
-        <div v-for="a in alterations" :key="a.change_number + a.step_impact_id" class="ta-item"
+        <div v-for="a in alterations" :key="a.change_number + a.project_id" class="ta-item"
             :style="{ borderColor: a.change_color }">
             <div class="ta-badge" :style="{ backgroundColor: a.change_color }">
                 {{ a.change_number }}

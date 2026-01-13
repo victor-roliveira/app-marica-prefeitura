@@ -649,7 +649,6 @@ const stepEndLines = computed<StepEndLine[]>(() => {
     right: 0;
     border-radius: 2px;
     z-index: 3;
-    opacity: 0.95;
 }
 
 .gm-impact {
@@ -671,13 +670,15 @@ const stepEndLines = computed<StepEndLine[]>(() => {
     background: #ff9800;
     transform: translateY(-50%);
     border-radius: 2px;
-    opacity: 0.9;
+    opacity: 1;
+    width: 300px;
 }
 
 .gm-changes {
     position: relative;
     min-width: 0;
     z-index: 8;
+    width: 95px;
 }
 
 .gm-change {
