@@ -1,13 +1,10 @@
 <template>
     <div class="ts-root">
         <div v-for="s in stages" :key="s.step_id" class="ts-col">
-            <!-- Nome da etapa -->
             <div class="ts-stage-name" :class="{ 'is-vertical': s.orientation_text === 'vertical' }"
                 :title="s.step_name">
                 {{ s.step_name }}
             </div>
-
-            <!-- Valor/emoji -->
             <div class="ts-stage-progress">
                 <template v-if="isCompleted(s.step_id)">
                     <span v-if="showEmojis">{{ s.checked_icon }}</span>
@@ -21,8 +18,6 @@
                     <span v-else>0%</span>
                 </template>
             </div>
-
-            <!-- BARRA VERTICAL (somente quando showBars = true) -->
             <div v-if="showBars" class="ts-vbar-bg" :style="{ height: barsHeightPx + 'px' }">
                 <div class="ts-vbar-fill" :style="{
                     height: getPercent(s.step_id) + '%',
@@ -34,17 +29,13 @@
 </template>
 
 <script setup lang="ts">
-import type { Stage, StageProgress } from "./types";
+import type { Stage, StageProgress } from "./helpers/types";
 
 const props = defineProps<{
     stages: Stage[];
     progressByStage: Record<string, StageProgress | undefined>;
     showEmojis: boolean;
-
-    /** mobile: renderizar barras verticais abaixo das etapas */
     showBars?: boolean;
-
-    /** altura do painel da barra no mobile */
     barsHeightPx?: number;
 }>();
 
@@ -80,7 +71,7 @@ function shouldShowPercent(etapaId: string): boolean {
 .ts-root {
   display: flex;
   align-items: flex-end;
-  gap: 7px;  /* antes: 10px */
+  gap: 7px;
   overflow-x: auto;
   padding-bottom: 2px;
   font-family: 'Montserrat';
@@ -93,35 +84,30 @@ function shouldShowPercent(etapaId: string): boolean {
   flex-direction: column;
   align-items: center;
   min-width: var(--stage-col-width, 18px);
-  gap: 2px;                    /* antes: 4px */
+  gap: 2px;                  
 }
 
-/* Nome da etapa */
 .ts-stage-name {
-  font-size: 10px;             /* antes: 11–12px */
+  font-size: 10px;             
   font-weight: 600;
   color: rgba(0, 0, 0, 0.75);
   white-space: nowrap;
   line-height: 1.05;
 }
 
-/* Vertical */
 .ts-stage-name.is-vertical {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
 }
 
-/* Percentual */
 .ts-stage-progress {
-  font-size: 10px;             /* antes: 11–12px */
+  font-size: 10px;            
   font-weight: 700;
   color: rgba(0, 0, 0, 0.7);
   line-height: 1;
   padding-top: 10px;
 }
 
-
-/* Barra vertical compacta */
 .ts-vbar-bg {
     width: 12px;
     background: rgba(0, 0, 0, 0.12);

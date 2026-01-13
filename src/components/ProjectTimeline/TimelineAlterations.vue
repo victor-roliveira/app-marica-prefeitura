@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Alteration } from "./types";
+import type { Alteration } from "./helpers/types";
 
 defineProps<{
     alterations: Alteration[];

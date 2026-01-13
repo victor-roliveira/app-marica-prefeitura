@@ -121,7 +121,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import type { ProjectDetailsViewModel } from "./projectDetailsTypes";
+import type { ProjectDetailsViewModel } from "./helpers/projectDetailsTypes";
 
 const router = useRouter();
 const route = useRoute();
@@ -384,9 +384,9 @@ function formatDelayNumber(days: number) {
 .pd-blob {
     position: absolute;
     right: -22px;
-    top: -18px;
-    width: 72px;
-    height: 72px;
+    top: -20px;
+    width: 60px;
+    height: 60px;
     border-radius: 999px;
     background: rgba(245, 158, 11, 0.18);
 }

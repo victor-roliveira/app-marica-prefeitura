@@ -164,7 +164,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-import type { Alteration, ISODate, Milestone, Project, Stage, StageProgress } from "./types";
+import type { Alteration, ISODate, Milestone, Project, Stage, StageProgress } from "./helpers/types";
 import TimelineAxis from "../../components/ProjectTimeline/TimelineAxis.vue";
 
 const props = defineProps<{
@@ -671,7 +671,7 @@ const stepEndLines = computed<StepEndLine[]>(() => {
     transform: translateY(-50%);
     border-radius: 2px;
     opacity: 1;
-    width: 300px;
+    width: 320px;
 }
 
 .gm-changes {
@@ -699,13 +699,13 @@ const stepEndLines = computed<StepEndLine[]>(() => {
 }
 
 .gm-badge {
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     border-radius: 999px;
     background: #ff9800;
     color: #fff;
     font-weight: 900;
-    font-size: 12px;
+    font-size: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -742,7 +742,6 @@ const stepEndLines = computed<StepEndLine[]>(() => {
     right: 0;
     border-radius: 2px;
     background: #ff9800;
-    opacity: 0.8;
     z-index: 5;
     pointer-events: none;
 }

@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { ISODate, Milestone, Stage, StageProgress } from "./types";
+import type { ISODate, Milestone, Stage, StageProgress } from "./helpers/types";
 
 type StepEnd = { step_id: string; step_name: string; step_end_date: ISODate };
 

@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProjectStatus } from "./types";
+import type { ProjectStatus } from "./helpers/types";
 
 defineProps<{
     title: string;

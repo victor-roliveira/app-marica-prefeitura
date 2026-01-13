@@ -30,7 +30,7 @@ import { useDisplay } from "vuetify";
 import TimelineGanttMobile from "./TimelineGanttMobile.vue";
 import TimelineGanttDesktop from "./TimelineGanttDesktop.vue";
 
-import type { Project, Stage, StageProgress, Milestone, Alteration, TimelineConfig } from "./types";
+import type { Project, Stage, StageProgress, Milestone, Alteration, TimelineConfig } from "./helpers/types";
 
 const display = useDisplay();
 const isMobile = computed(() => display.smAndDown.value);
