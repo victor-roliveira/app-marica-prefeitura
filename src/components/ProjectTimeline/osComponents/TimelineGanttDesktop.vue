@@ -1,151 +1,124 @@
 <template>
     <div class="gd-root">
-        <!-- HEADER -->
-        <div class="gd-h-axis"></div>
+        <!-- Header -->
+        <div class="gd-head">
+            <div>
 
-        <div class="gd-h-track">
-            <div class="gd-h-stages">
-                <TimelineStages :stages="stages" :progress-by-stage="progressByStage" :show-emojis="true"
-                    :show-bars="false" />
+                <div class="gd-subtitle">Cronograma de Marcos e Entregas</div>
             </div>
         </div>
 
-        <div class="gd-h-changes"></div>
-
-        <!-- CHART -->
-        <div class="gd-axis">
-            <div class="gd-axis-line" />
-
-            <button v-for="m in sortedMilestones" :key="m.milestone_id" class="gd-milestone" type="button"
-                :style="{ top: y(m.milestone_date) + 'px' }" @click="openMilestone(m)">
-                <span class="gd-dot" />
-                <span class="gd-mtext">
-                    <span class="gd-mdate">{{ fmt(m.milestone_date) }}</span>
-                    <span class="gd-mlabel">{{ m.description }}</span>
-                </span>
-            </button>
-        </div>
-
-        <div ref="chartEl" class="gd-track">
-            <!-- Inauguração com altura alinhada ao eixo (não ultrapassa a última data) -->
-            <div class="gd-inaug-wrap" :style="inaugWrapStyle">
-                <TimelineInauguration :color="inaugColor" />
-            </div>
-
-            <!-- Colunas das etapas -->
-            <div class="gd-stages">
-                <div v-for="s in stages" :key="s.step_id" class="gd-stage-col" :title="s.step_name">
-                    <div class="gd-block" :style="blockStyle(s.step_id, s.default_color)" />
-
-                    <div v-for="impact in impactsByStage[s.step_id] ?? []" :key="impact.key" class="gd-impact"
-                        :style="impactStyle(impact.start, impact.end)" :title="impact.title" />
-                </div>
-            </div>
-
-            <!-- linhas de alterações (data de registro) -->
-            <div v-for="a in alterations" :key="a.change_number + '-' + a.step_impact_id" class="gd-change-line"
-                :style="{ top: y(a.change_date) + 'px' }" />
-        </div>
-
-        <div class="gd-changes">
-            <button v-for="a in alterations" :key="'b-' + a.change_number + '-' + a.step_impact_id" type="button"
-                class="gd-change-btn" :style="{ top: y(a.change_date) + 'px' }" @click="openChange(a)"
-                :aria-label="`Alteração ${a.change_number} em ${fmt(a.change_date)}`">
-                <div class="gd-badge" :style="{ backgroundColor: a.change_color ?? '#ff9800' }">
-                    {{ a.change_number }}
-                </div>
-                <div class="gd-change-date">{{ fmt(a.change_date) }}</div>
-            </button>
-        </div>
-
-        <!-- MODAL (milestone) -->
-        <v-dialog v-model="milestoneDialog" max-width="520">
-            <v-card>
-                <v-card-title class="text-subtitle-1 font-weight-bold">
-                    Marco do Projeto
-                </v-card-title>
-
-                <v-card-text>
-                    <div class="gd-modal-row">
-                        <div class="gd-modal-label">Data:</div>
-                        <div class="gd-modal-value">
-                            {{ selectedMilestone ? fmt(selectedMilestone.milestone_date) : "-" }}
+        <!-- Chart -->
+        <div class="gd-card">
+            <div class="gd-chart">
+                <!-- Left labels -->
+                <div class="gd-left">
+                    <div class="gd-left-spacer" />
+                    <div v-for="row in rows" :key="row.step.step_id" class="gd-left-row"
+                        :style="{ height: rowHeightPx + 'px' }">
+                        <div class="gd-step-name">
+                            <span class="gd-step-name-text">
+                                {{ row.step.step_name.toUpperCase() }}
+                            </span>
+                            <span v-if="row.progress?.show_percent" class="gd-step-pct">
+                                ({{ row.progress?.advance_percent ?? 0 }}%)
+                            </span>
                         </div>
                     </div>
 
-                    <div class="gd-modal-row">
-                        <div class="gd-modal-label">Descrição:</div>
-                        <div class="gd-modal-value">{{ selectedMilestone?.description ?? "-" }}</div>
+                    <!-- Inaug row label -->
+                    <div class="gd-left-row" :style="{ height: rowHeightPx + 'px' }">
+                        <div class="gd-step-name">
+                            <span class="gd-step-name-text">INAUGURAÇÃO</span>
+                        </div>
                     </div>
+                </div>
 
-                    <div class="gd-modal-row">
-                        <div class="gd-modal-label">Momento:</div>
-                        <div class="gd-modal-value">{{ (selectedMilestone as any)?.milestone_type ?? "-" }}</div>
-                    </div>
-                </v-card-text>
-
-                <v-card-actions>
-                    <v-spacer />
-                    <v-btn variant="tonal" @click="milestoneDialog = false">Fechar</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-
-        <!-- MODAL (change) -->
-        <v-dialog v-model="changeDialog" max-width="560">
-            <v-card>
-                <v-card-title class="text-subtitle-1 font-weight-bold">
-                    Alteração {{ selectedChange?.change_number ?? "" }}
-                </v-card-title>
-
-                <v-card-text>
-                    <div class="gd-modal-row">
-                        <div class="gd-modal-label">Registro:</div>
-                        <div class="gd-modal-value">{{ selectedChange ? fmt(selectedChange.change_date) : "-" }}</div>
-                    </div>
-
-                    <div class="gd-modal-row">
-                        <div class="gd-modal-label">Descrição:</div>
-                        <div class="gd-modal-value">{{ selectedChange?.description ?? "-" }}</div>
-                    </div>
-
-                    <div class="gd-modal-row">
-                        <div class="gd-modal-label">Etapa:</div>
-                        <div class="gd-modal-value">{{ selectedChange?.step_impact_id ?? "-" }}</div>
-                    </div>
-
-                    <div v-if="selectedChangeImpactRange" class="gd-modal-row">
-                        <div class="gd-modal-label">Impacto:</div>
-                        <div class="gd-modal-value">
-                            {{ fmt(selectedChangeImpactRange.start) }} → {{ fmt(selectedChangeImpactRange.end) }}
+                <!-- Right timeline -->
+                <div class="gd-right">
+                    <!-- top axis -->
+                    <div class="gd-axis" :style="{ height: axisHeightPx + 'px' }">
+                        <div v-for="m in months" :key="m.key" class="gd-axis-tick" :style="{ left: m.xPct + '%' }">
+                            <div class="gd-axis-label">{{ m.label }}</div>
                         </div>
                     </div>
 
-                    <div v-if="(selectedChange as any)?.reason" class="gd-modal-row">
-                        <div class="gd-modal-label">Motivo:</div>
-                        <div class="gd-modal-value">{{ (selectedChange as any)?.reason }}</div>
+                    <!-- grid lines -->
+                    <div class="gd-grid">
+                        <div v-for="m in months" :key="m.key" class="gd-grid-line" :style="{ left: m.xPct + '%' }" />
                     </div>
 
-                    <div v-if="(selectedChange as any)?.notes" class="gd-modal-row">
-                        <div class="gd-modal-label">Obs:</div>
-                        <div class="gd-modal-value">{{ (selectedChange as any)?.notes }}</div>
-                    </div>
-                </v-card-text>
+                    <!-- rows -->
+                    <div class="gd-rows">
+                        <div v-for="row in rows" :key="row.step.step_id" class="gd-row"
+                            :style="{ height: rowHeightPx + 'px' }">
+                            <div class="gd-track">
+                                <!-- baseline bar -->
+                                <div class="gd-bar" :style="barStyle(row.baselineStart, row.baselineEnd, row.color)">
+                                    <!-- progress overlay -->
+                                    <div class="gd-bar-progress"
+                                        :style="{ width: (row.progress?.advance_percent ?? 0) + '%' }" />
 
-                <v-card-actions>
-                    <v-spacer />
-                    <v-btn variant="tonal" @click="changeDialog = false">Fechar</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
+                                    <!-- milestones chips that fall inside this stage window -->
+                                    <button v-for="ms in row.milestonesInRange" :key="ms.milestone_id" class="gd-chip"
+                                        type="button" :style="{ left: dateToXPct(ms.milestone_date) + '%' }"
+                                        @click="onMilestone(ms)">
+                                        {{ ms.description }}
+                                    </button>
+
+                                    <!-- status icon on end -->
+                                    <div class="gd-end-icon" :title="row.statusTitle">
+                                        <span class="gd-end-icon-inner">
+                                            {{ row.statusIcon }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- extension (delay/alteration) ALWAYS after baseline end -->
+                                <div v-if="row.extensionEnd && isAfter(row.extensionEnd, row.baselineEnd)"
+                                    class="gd-extension"
+                                    :style="barStyle(row.baselineEnd, row.extensionEnd, row.alterColor)"
+                                    :title="row.alterTitle" />
+
+                                <!-- alteration bubble at extension end -->
+                                <button v-if="row.bubbleDate" class="gd-bubble" type="button"
+                                    :style="{ left: dateToXPct(row.bubbleDate) + '%' }"
+                                    @click="onAlteration(row.bubbleAlteration)">
+                                    <span class="gd-bubble-date">{{ formatBR(row.bubbleDate) }}</span>
+                                    <span class="gd-bubble-icon">{{ row.bubbleAlteration?.icon ?? "⏸️" }}</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Inaug row -->
+                        <div class="gd-row" :style="{ height: rowHeightPx + 'px' }">
+                            <div class="gd-track">
+                                <div class="gd-bar" :style="barStyle(inaugStart, inaugEnd, inaugColor)">
+                                    <div class="gd-end-icon" :title="'Inauguração'">
+                                        <span class="gd-end-icon-inner">🏁</span>
+                                    </div>
+                                </div>
+
+                                <button class="gd-bubble" type="button"
+                                    :style="{ left: dateToXPct(project.inauguration_date) + '%' }" @click.prevent>
+                                    <span class="gd-bubble-date">{{ formatBR(project.inauguration_date) }}</span>
+                                    <span class="gd-bubble-icon">⏱️</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- dialogs (placeholder) -->
+            <!-- Você pode plugar seu v-dialog aqui depois -->
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onBeforeUnmount } from "vue";
-import TimelineInauguration from "./TimelineInauguration.vue";
-import TimelineStages from "./TimelineStages.vue";
-import type { Alteration, ISODate, Milestone, Project, Stage, StageProgress } from "../helpers/types";
+import { computed } from "vue";
+import type { Alteration, ISODate, Milestone, Project, Stage, StageProgress, TimelineConfig } from "../helpers/types";
 
 const props = defineProps<{
     project: Project;
@@ -153,528 +126,485 @@ const props = defineProps<{
     progress: StageProgress[];
     milestones: Milestone[];
     alterations: Alteration[];
-    heightPx?: number;       // mantido por compat, mas não usado para layout
+    config?: TimelineConfig;
+    heightPx?: number;
     inaugurColor?: string;
 }>();
 
-const inaugColor = computed(() => props.inaugurColor ?? "#0A2A66");
+/* ---------- config ---------- */
+const rowHeightPx = computed(() => props.config?.height_bar_step ?? 32);
+const axisHeightPx = 34;
 
-/* ====== medir altura real do chart (para y()) ====== */
-const chartEl = ref<HTMLElement | null>(null);
-const chartHeight = ref(520);
+const inaugColor = computed(() => props.inaugurColor ?? props.config?.color_inauguration ?? "#0A2A66");
 
-let ro: ResizeObserver | null = null;
+/* ---------- date helpers ---------- */
+function parseISO(d: ISODate): Date {
+    // ISODate = "YYYY-MM-DD"
+    const [y, m, day] = d.split("-").map((x) => Number(x));
+    return new Date(y, (m ?? 1) - 1, day ?? 1);
+}
 
-onMounted(() => {
-    if (!chartEl.value) return;
-    ro = new ResizeObserver(() => {
-        const h = chartEl.value?.clientHeight ?? 520;
-        chartHeight.value = Math.max(420, h);
-    });
-    ro.observe(chartEl.value);
+function toISO(d: Date): ISODate {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+}
+
+function startOfMonth(d: Date): Date {
+    return new Date(d.getFullYear(), d.getMonth(), 1);
+}
+
+function addMonths(d: Date, n: number): Date {
+    return new Date(d.getFullYear(), d.getMonth() + n, 1);
+}
+
+function daysBetween(a: Date, b: Date): number {
+    const ms = b.getTime() - a.getTime();
+    return Math.round(ms / (1000 * 60 * 60 * 24));
+}
+
+function clamp(n: number, min: number, max: number): number {
+    return Math.max(min, Math.min(max, n));
+}
+
+function isAfter(a: ISODate, b: ISODate): boolean {
+    return parseISO(a).getTime() > parseISO(b).getTime();
+}
+
+function formatBR(d: ISODate): string {
+    const dt = parseISO(d);
+    const dd = String(dt.getDate()).padStart(2, "0");
+    const mm = String(dt.getMonth() + 1).padStart(2, "0");
+    return `${dd}/${mm}`;
+}
+
+/* ---------- domain range (timeline start/end) ---------- */
+const domainStart = computed(() => {
+    const dates: ISODate[] = [
+        props.project.start_date,
+        ...props.progress.map((p) => p.step_start_date),
+        ...props.milestones.map((m) => m.milestone_date),
+        ...props.alterations.map((a) => a.impact_start_date ?? a.change_date),
+    ].filter(Boolean) as ISODate[];
+
+    let min = dates[0] ?? props.project.start_date;
+    for (const d of dates) if (parseISO(d) < parseISO(min)) min = d;
+
+    // “respiro” para ficar parecido com a imagem
+    const dt = startOfMonth(parseISO(min));
+    return toISO(dt);
 });
 
-onBeforeUnmount(() => {
-    ro?.disconnect();
-    ro = null;
+const domainEnd = computed(() => {
+    const dates: ISODate[] = [
+        props.project.end_date,
+        props.project.inauguration_date,
+        ...props.progress.map((p) => p.step_end_date),
+        ...props.milestones.map((m) => m.milestone_date),
+        ...props.alterations.map((a) => a.new_end_date ?? a.impact_end_date ?? a.change_date),
+    ].filter(Boolean) as ISODate[];
+
+    let max = dates[0] ?? props.project.end_date;
+    for (const d of dates) if (parseISO(d) > parseISO(max)) max = d;
+
+    // fecha no mês para o grid ficar limpo
+    const dt = startOfMonth(parseISO(max));
+    return toISO(addMonths(dt, 1)); // fim no início do mês seguinte
 });
 
-/* modal state */
-const milestoneDialog = ref(false);
-const selectedMilestone = ref<Milestone | null>(null);
-const changeDialog = ref(false);
-const selectedChange = ref<Alteration | null>(null);
-
-function openMilestone(m: Milestone) {
-    selectedMilestone.value = m;
-    milestoneDialog.value = true;
-}
-
-function openChange(a: Alteration) {
-    selectedChange.value = a;
-    changeDialog.value = true;
-}
-
-/**
- * Timezone-safe para "YYYY-MM-DD"
- */
-function fmt(dateIso: ISODate) {
-    const [y, m, d] = String(dateIso).split("-");
-    if (!y || !m || !d) return String(dateIso);
-    return `${d}/${m}/${y}`;
-}
-
-function toLocalMiddayTime(dateIso: ISODate): number {
-    const parts = String(dateIso).split("-").map((x) => Number(x));
-    const y = parts[0];
-    const m = parts[1];
-    const d = parts[2];
-    if (!y || !m || !d) return NaN;
-    return new Date(y, m - 1, d, 12, 0, 0, 0).getTime();
-}
-
-function clamp(v: number, min: number, max: number) {
-    return Math.max(min, Math.min(max, v));
-}
-
-function normalizeRange(start: ISODate, end: ISODate): { start: ISODate; end: ISODate } | null {
-    const s = toLocalMiddayTime(start);
-    const e = toLocalMiddayTime(end);
-    if (!Number.isFinite(s) || !Number.isFinite(e)) return null;
-    if (e < s) return { start: end, end: start };
-    return { start, end };
-}
-
-/* range principal */
-const rangeStart = computed<ISODate>(() => {
-    const earliest = [...props.milestones].sort(
-        (a, b) => toLocalMiddayTime(a.milestone_date) - toLocalMiddayTime(b.milestone_date)
-    )[0];
-    return earliest?.milestone_date ?? (props.project.start_date ?? props.project.inauguration_date);
+const domainDays = computed(() => {
+    const a = parseISO(domainStart.value);
+    const b = parseISO(domainEnd.value);
+    return Math.max(1, daysBetween(a, b));
 });
 
-const rangeEnd = computed<ISODate>(() => props.project.inauguration_date);
-
-function ratio(dateIso: ISODate): number {
-    const start = toLocalMiddayTime(rangeStart.value);
-    const end = toLocalMiddayTime(rangeEnd.value);
-    const d = toLocalMiddayTime(dateIso);
-    const denom = Math.max(1, end - start);
-    return clamp((d - start) / denom, 0, 1);
+function dateToXPct(date: ISODate): number {
+    const d0 = parseISO(domainStart.value);
+    const d1 = parseISO(domainEnd.value);
+    const x = daysBetween(d0, parseISO(date));
+    const pct = (x / Math.max(1, daysBetween(d0, d1))) * 100;
+    return clamp(pct, 0, 100);
 }
 
-/* padding que define o "range visual" do eixo (precisa bater com inaugWrapStyle) */
-const PAD_TOP = 12;
-const PAD_BOTTOM = 12;
-
-function y(dateIso: ISODate): number {
-    const usable = Math.max(1, chartHeight.value - PAD_TOP - PAD_BOTTOM);
-    return PAD_TOP + ratio(dateIso) * usable;
-}
-
-const inaugWrapStyle = computed(() => {
-    const usable = Math.max(1, chartHeight.value - PAD_TOP - PAD_BOTTOM);
+function barStyle(start: ISODate, end: ISODate, color: string) {
+    const left = dateToXPct(start);
+    const right = dateToXPct(end);
+    const width = Math.max(0.5, right - left); // evita sumir quando muito curto
     return {
-        top: `${PAD_TOP}px`,
-        height: `${usable}px`,
-    };
-});
-
-const sortedMilestones = computed(() =>
-    [...props.milestones].sort(
-        (a, b) => toLocalMiddayTime(a.milestone_date) - toLocalMiddayTime(b.milestone_date)
-    )
-);
-
-/* ranges por etapa */
-const rangeByStage = computed<Record<string, { start: ISODate; end: ISODate } | undefined>>(() => {
-    const map: Record<string, { start: ISODate; end: ISODate } | undefined> = {};
-
-    // 1) progress
-    for (const p of props.progress) {
-        if ((p as any).step_start_date && (p as any).step_end_date) {
-            map[p.step_id] = { start: (p as any).step_start_date, end: (p as any).step_end_date };
-        }
-    }
-
-    // 2) fallback stage
-    for (const s of props.stages) {
-        const anyStage = s as any;
-        if (!map[s.step_id] && anyStage.step_start_date && anyStage.step_end_date) {
-            map[s.step_id] = { start: anyStage.step_start_date, end: anyStage.step_end_date };
-        }
-    }
-
-    // 3) fallback final DEV
-    for (const s of props.stages) {
-        if (!map[s.step_id]) map[s.step_id] = { start: rangeStart.value, end: rangeStart.value };
-    }
-
-    return map;
-});
-
-function blockStyle(stepId: string, color: string) {
-    const r = rangeByStage.value[stepId];
-    if (!r) return { display: "none" };
-
-    const nr = normalizeRange(r.start, r.end);
-    if (!nr) return { display: "none" };
-
-    const top = y(nr.start);
-    const bottom = y(nr.end);
-    const h = Math.max(26, bottom - top);
-
-    return {
-        top: `${top}px`,
-        height: `${h}px`,
+        left: left + "%",
+        width: width + "%",
         backgroundColor: color,
     };
 }
 
-/**
- * Impactos laranja (espelho do mobile)
- */
-type ImpactInterval = {
-    key: string;
-    stepId: string;
-    start: ISODate;
-    end: ISODate;
-    title: string;
-};
+/* ---------- months grid ---------- */
+const months = computed(() => {
+    const start = parseISO(domainStart.value);
+    const end = parseISO(domainEnd.value);
 
-const progressByStage = computed<Record<string, StageProgress | undefined>>(() => {
-    const map: Record<string, StageProgress | undefined> = {};
-    for (const p of props.progress) map[p.step_id] = p;
-    return map;
-});
+    const items: Array<{ key: string; label: string; xPct: number }> = [];
+    let cur = startOfMonth(start);
 
-const progressByStep = computed(() => {
-    const map: Record<string, StageProgress> = {};
-    for (const p of props.progress) map[p.step_id] = p;
-    return map;
-});
+    // inclui ticks até passar do end
+    for (let i = 0; i < 200; i++) {
+        if (cur.getTime() > end.getTime()) break;
 
-const impactsByStage = computed<Record<string, ImpactInterval[]>>(() => {
-    const map: Record<string, ImpactInterval[]> = {};
+        const key = `${cur.getFullYear()}-${cur.getMonth() + 1}`;
+        const label = cur.toLocaleDateString("pt-BR", { month: "short" }).toUpperCase();
+        const iso = toISO(cur);
+        items.push({ key, label, xPct: dateToXPct(iso) });
 
-    for (const a of props.alterations as any[]) {
-        const stepId = String(a.step_impact_id);
-        if (!map[stepId]) map[stepId] = [];
-
-        if (a.impact_start_date && a.impact_end_date) {
-            map[stepId].push({
-                key: `ch${a.change_number}-explicit-${stepId}`,
-                stepId,
-                start: a.impact_start_date,
-                end: a.impact_end_date,
-                title: `Alteração ${a.change_number}: ${a.description ?? ""}`.trim(),
-            });
-            continue;
-        }
-
-        const p = progressByStep.value[stepId] as any;
-        if (!p) continue;
-
-        let start: ISODate | null = null;
-        let end: ISODate | null = null;
-
-        if (a.start_impact && a.new_start_date && p.step_start_date) {
-            const r = normalizeRange(p.step_start_date, a.new_start_date);
-            if (r) {
-                start = r.start;
-                end = r.end;
-            }
-        }
-
-        if (a.end_impact && a.new_end_date && p.step_end_date) {
-            const r = normalizeRange(p.step_end_date, a.new_end_date);
-            if (r) {
-                if (!start || !end) {
-                    start = r.start;
-                    end = r.end;
-                } else {
-                    const r2 = normalizeRange(start, end);
-                    const r3 = normalizeRange(r.start, r.end);
-                    if (r2 && r3) {
-                        const combined = normalizeRange(
-                            toLocalMiddayTime(r2.start) <= toLocalMiddayTime(r3.start) ? r2.start : r3.start,
-                            toLocalMiddayTime(r2.end) >= toLocalMiddayTime(r3.end) ? r2.end : r3.end
-                        );
-                        if (combined) {
-                            start = combined.start;
-                            end = combined.end;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (start && end) {
-            map[stepId].push({
-                key: `ch${a.change_number}-derived-${stepId}`,
-                stepId,
-                start,
-                end,
-                title: `Alteração ${a.change_number}: ${a.description ?? ""}`.trim(),
-            });
-        }
+        cur = addMonths(cur, 1);
     }
 
-    for (const k of Object.keys(map)) {
-        map[k].sort((x, y) => toLocalMiddayTime(x.start) - toLocalMiddayTime(y.start));
-    }
-
-    return map;
+    return items;
 });
 
-function impactStyle(start: ISODate, end: ISODate) {
-    const nr = normalizeRange(start, end);
-    if (!nr) return { display: "none" };
+/* ---------- rows assembly ---------- */
+const stagesSorted = computed(() => [...props.stages].sort((a, b) => a.view_order - b.view_order));
 
-    const top = y(nr.start);
-    const bottom = y(nr.end);
-
-    return {
-        top: `${top}px`,
-        height: `${Math.max(12, bottom - top)}px`,
-    };
+function findProgress(step_id: string): StageProgress | undefined {
+    return props.progress.find((p) => p.step_id === step_id && p.project_id === props.project.project_id);
 }
 
-/* modal: impacto da alteração selecionada */
-const selectedChangeImpactRange = computed<{ start: ISODate; end: ISODate } | null>(() => {
-    if (!selectedChange.value) return null;
-    const stepId = String(selectedChange.value.step_impact_id);
-    const list = impactsByStage.value[stepId] ?? [];
-    const found = list.find((x) => x.key.startsWith(`ch${(selectedChange.value as any).change_number}-`));
-    return found ? { start: found.start, end: found.end } : null;
+function alterationsForStep(step_id: string): Alteration[] {
+    return props.alterations.filter((a) => {
+        if (a.project_id !== props.project.project_id) return false;
+        if (a.step_impact_id === step_id) return true;
+        if (a.step_impact_ids?.includes(step_id)) return true;
+        return false;
+    });
+}
+
+function milestoneInRange(ms: Milestone, start: ISODate, end: ISODate) {
+    const t = parseISO(ms.milestone_date).getTime();
+    return t >= parseISO(start).getTime() && t <= parseISO(end).getTime();
+}
+
+const rows = computed(() => {
+    return stagesSorted.value.map((step) => {
+        const prog = findProgress(step.step_id);
+
+        // baseline window comes from progress; fallback: project range
+        const baselineStart = prog?.step_start_date ?? props.project.start_date;
+        const baselineEnd = prog?.step_end_date ?? props.project.end_date;
+
+        const alts = alterationsForStep(step.step_id);
+
+        // extension end: max of new_end_date/impact_end_date, but ALWAYS compared to baselineEnd
+        let extensionEnd: ISODate | null = null;
+        let bubbleAlteration: Alteration | null = null;
+
+        for (const a of alts) {
+            const candidate =
+                a.new_end_date ??
+                a.impact_end_date ??
+                null;
+
+            if (!candidate) continue;
+            if (!isAfter(candidate, baselineEnd)) continue;
+
+            if (!extensionEnd || isAfter(candidate, extensionEnd)) {
+                extensionEnd = candidate;
+                bubbleAlteration = a;
+            }
+        }
+
+        const milestonesInRange = props.milestones
+            .filter((m) => m.project_id === props.project.project_id)
+            .filter((m) => milestoneInRange(m, baselineStart, extensionEnd ?? baselineEnd))
+            .filter((m) => m.description.toLowerCase().includes("check") || m.milestone_type !== "intermediário" ? true : true); // você pode refinar depois
+
+        const showChecked = props.config?.show_icons_checked ?? true;
+
+        let statusIcon = "⏸️";
+        let statusTitle = "Em andamento";
+        if (prog?.completed) {
+            statusIcon = showChecked ? (step.checked_icon ?? "✅") : "✓";
+            statusTitle = "Concluído";
+        } else if (bubbleAlteration) {
+            statusIcon = bubbleAlteration.icon ?? "⏸️";
+            statusTitle = `Alteração #${bubbleAlteration.change_number}`;
+        }
+
+        return {
+            step,
+            progress: prog,
+            color: step.default_color ?? "#2196F3",
+            alterColor: bubbleAlteration?.change_color ?? "#FF9800",
+            baselineStart,
+            baselineEnd,
+            extensionEnd,
+            bubbleDate: extensionEnd, // bolha no fim da extensão
+            bubbleAlteration,
+            milestonesInRange,
+            statusIcon,
+            statusTitle,
+            alterTitle: bubbleAlteration ? bubbleAlteration.description : "",
+        };
+    });
 });
+
+/* ---------- inauguration bar ---------- */
+const inaugStart = computed(() => {
+    // barra curta antes da data de inauguração, para ficar parecida com a imagem
+    // (não é “verdade” do cronograma; é apenas visual)
+    const end = parseISO(props.project.inauguration_date);
+    const start = new Date(end);
+    start.setDate(start.getDate() - 45);
+    const iso = toISO(start);
+    // não deixa sair do domínio
+    return parseISO(iso) < parseISO(domainStart.value) ? domainStart.value : iso;
+});
+
+const inaugEnd = computed(() => props.project.inauguration_date);
+
+/* ---------- events (plugar v-dialog depois) ---------- */
+function onMilestone(m: Milestone) {
+    // aqui você abre seu dialog e mostra m.description, etc.
+    // por enquanto, noop
+    console.log("milestone:", m);
+}
+
+function onAlteration(a: Alteration | null) {
+    if (!a) return;
+    console.log("alteration:", a);
+}
 </script>
 
 <style scoped>
-/* densidade desktop via vars herdáveis */
 .gd-root {
-    --stage-col-width: 34px;
-    --stage-gap: 16px;
-
     display: grid;
-    grid-template-columns: 260px 1fr 220px;
-    /* axis | track | changes */
-    grid-template-rows: auto 1fr;
-    /* header | chart */
-    column-gap: 18px;
-    row-gap: 10px;
-
-    min-width: 0;
-    height: auto;
-    /* NÃO fixa altura */
-    min-height: 620px;
-    /* garante respiro e evita sumir com a última data */
-    overflow: visible;
-    /* evita scrollbar indesejado */
+    gap: 12px;
+    font-family: 'Montserrat';
 }
 
-/* ============= HEADER (linha 1) ============= */
-.gd-h-axis {
-    grid-column: 1;
-    grid-row: 1;
-}
-
-/* Header do track: agora alinhado após a inauguração via padding-left */
-.gd-h-track {
-    grid-column: 2;
-    grid-row: 1;
-    min-width: 0;
-
-    /* reserva o espaço da inauguração + gap (mesmo do chart) */
-    padding-left: calc(34px + 16px);
-}
-
-.gd-h-stages {
-    min-width: 0;
-}
-
-.gd-h-changes {
-    grid-column: 3;
-    grid-row: 1;
-}
-
-/* ============= CHART (linha 2) ============= */
-.gd-axis {
-    grid-column: 1;
-    grid-row: 2;
-    position: relative;
-    height: 100%;
-    overflow: visible;
-}
-
-.gd-track {
-    grid-column: 2;
-    grid-row: 2;
-
-    position: relative;
-    height: 100%;
-    min-width: 0;
-    overflow: visible;
-
-    /* reserva o espaço da inauguração + gap */
-    padding-left: calc(34px + 16px);
-}
-
-.gd-changes {
-    grid-column: 3;
-    grid-row: 2;
-    position: relative;
-    height: 100%;
-    overflow: visible;
-}
-
-/* inauguração: altura alinhada ao range visual (padTop/padBottom) */
-.gd-inaug-wrap {
-    position: absolute;
-    left: 0;
-    width: 34px;
-    /* top/height vêm do computed inaugWrapStyle */
-}
-
-/* ===== axis ===== */
-.gd-axis-line {
-    position: absolute;
-    left: 10px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: rgba(0, 0, 0, 0.12);
-    border-radius: 2px;
-}
-
-.gd-milestone {
-    position: absolute;
-    left: 0;
-    right: 0;
-    transform: translateY(-50%);
-    display: grid;
-    grid-template-columns: 22px 1fr;
-    gap: 10px;
+.gd-head {
+    display: flex;
+    justify-content: space-between;
     align-items: start;
-    background: transparent;
-    border: 0;
-    padding: 0;
-    cursor: pointer;
-    text-align: left;
+    gap: 12px;
 }
 
-.gd-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 999px;
-    border: 2px solid rgba(0, 0, 0, 0.35);
-    background: #fff;
-    margin-left: 4px;
+.gd-title {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #0b1b34;
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+.gd-subtitle {
     margin-top: 2px;
+    font-size: 12px;
+    color: #6b7a90;
 }
 
-.gd-mtext {
+.gd-link {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #1f59ff;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.gd-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(20, 32, 56, 0.06);
+    padding: 18px;
+    overflow: hidden;
+}
+
+.gd-chart {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 12px;
+    align-items: start;
     min-width: 0;
+}
+
+.gd-left {
+    display: grid;
+    grid-template-rows: 34px auto;
+    gap: 0;
+}
+
+.gd-left-spacer {
+    height: 34px;
+}
+
+.gd-left-row {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    align-items: center;
+    padding-right: 10px;
 }
 
-.gd-mdate {
-    font-size: 12px;
-    font-weight: 900;
-    line-height: 1.1;
-}
-
-.gd-mlabel {
-    font-size: 12px;
-    line-height: 1.15;
-    opacity: 0.85;
-    word-break: break-word;
-}
-
-/* ===== stages ===== */
-.gd-stages {
-    position: relative;
-    height: 100%;
+.gd-step-name {
+    font-size: 11px;
+    font-weight: 800;
+    color: #7483a0;
+    letter-spacing: 1px;
+    line-height: 1;
     display: flex;
-    gap: var(--stage-gap);
-    align-items: flex-start;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-right: 6px;
+    align-items: baseline;
+    gap: 6px;
 }
 
-.gd-stage-col {
+.gd-step-name-text {
+    white-space: nowrap;
+}
+
+.gd-step-pct {
+    color: #8f9db5;
+    font-weight: 800;
+}
+
+.gd-right {
     position: relative;
-    width: var(--stage-col-width);
-    min-width: var(--stage-col-width);
-    height: 100%;
-    overflow: visible;
+    min-width: 0;
+    overflow: hidden;
 }
 
-.gd-block {
-    position: absolute;
-    left: 0;
-    right: 0;
-    border-radius: 6px;
-    z-index: 1;
-    opacity: 0.95;
+.gd-axis {
+    position: relative;
 }
 
-.gd-impact {
+.gd-axis-tick {
     position: absolute;
-    left: 0;
-    right: 0;
-    border-radius: 6px;
-    background: #ee790c;
-    opacity: 0.84;
-    z-index: 2;
+    top: 0;
+    transform: translateX(-50%);
+}
+
+.gd-axis-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #b0bdd2;
+    letter-spacing: 0.8px;
+}
+
+.gd-grid {
+    position: absolute;
+    inset: 34px 0 0 0;
+    /* abaixo do eixo */
     pointer-events: none;
 }
 
-/* linhas de alteração */
-.gd-change-line {
+.gd-grid-line {
     position: absolute;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: #ff9800;
-    transform: translateY(-50%);
-    border-radius: 2px;
-    opacity: 0.9;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-left: 1px dashed rgba(160, 175, 205, 0.25);
 }
 
-/* ===== changes ===== */
-.gd-change-btn {
-    position: absolute;
-    left: 0;
-    right: 0;
-    transform: translateY(-50%);
-    display: grid;
-    grid-template-columns: 34px 1fr;
-    gap: 10px;
-    align-items: center;
-    background: transparent;
-    border: 0;
-    padding: 0;
-    cursor: pointer;
-    text-align: left;
+.gd-rows {
+    position: relative;
+    margin-top: 0;
+    padding-top: 0;
 }
 
-.gd-badge {
-    width: 26px;
-    height: 26px;
-    border-radius: 999px;
-    color: #fff;
-    font-weight: 900;
-    font-size: 13px;
+.gd-row {
+    position: relative;
     display: flex;
     align-items: center;
-    justify-content: center;
 }
 
-.gd-change-date {
-    font-size: 12px;
-    font-weight: 800;
-    opacity: 0.85;
+.gd-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
-/* modal */
-.gd-modal-row {
+.gd-bar {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 18px;
+    border-radius: 999px;
+    overflow: visible;
+}
+
+.gd-bar-progress {
+    height: 100%;
+    background: rgba(0, 0, 0, 0.14);
+    border-radius: 999px;
+}
+
+.gd-extension {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 18px;
+    border-radius: 999px;
+    opacity: 0.95;
+}
+
+.gd-end-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.25);
     display: grid;
-    grid-template-columns: 110px 1fr;
-    gap: 10px;
-    margin-bottom: 10px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
-.gd-modal-label {
+.gd-end-icon-inner {
+    font-size: 11px;
+    line-height: 1;
+}
+
+.gd-chip {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 9px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 0;
+    background: rgba(255, 255, 255, 0.38);
+    color: rgba(255, 255, 255, 0.92);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.gd-bubble {
+    position: absolute;
+    top: 50%;
+    transform: translate(10px, -50%);
+    /* “na ponta” do fim */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(255, 152, 0, 0.15);
+    color: #ff9800;
     font-weight: 900;
-    font-size: 15px;
-    opacity: 0.75;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
-.gd-modal-value {
-    word-break: break-word;
+.gd-bubble-date {
+    font-size: 10px;
+}
+
+.gd-bubble-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 152, 0, 0.2);
+    font-size: 11px;
 }
 </style>

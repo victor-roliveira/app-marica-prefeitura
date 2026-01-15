@@ -27,7 +27,7 @@
           </v-tab>
 
           <v-tab value="acompanhamento" @click="goToAcompanhamento()">
-            <v-icon start>mdi-chart-bell-curve-cumulative</v-icon>
+            <v-icon start>mdi-view-dashboard</v-icon>
             <span>Acompanhamento</span>
           </v-tab>
 
@@ -49,7 +49,7 @@
     <v-navigation-drawer v-model="drawer" temporary location="right" width="280">
       <v-list nav density="comfortable">
         <v-list-item title="Projetos (Mapa)" prepend-icon="mdi-map-search" @click="navigateMobile('/')" />
-        <v-list-item title="Acompanhamento" prepend-icon="mdi-chart-bell-curve-cumulative"
+        <v-list-item title="Acompanhamento" prepend-icon="mdi-view-dashboard"
           @click="navigateMobileAcompanhamento()" />
         <v-list-item class="my-16" title="Sair" prepend-icon="mdi-logout"
           @click="() => { drawer = false, handleLogout() }" />
