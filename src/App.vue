@@ -4,7 +4,7 @@
     <v-app-bar class="text-white" color="white" elevation="4">
       <v-container class="d-flex align-center justify-space-between">
         <!-- SELECT DE OBRAS -->
-        <div class="d-flex align-center" style="min-width: 0;">
+        <div v-if="!isHome" class="d-flex align-start" style="min-width: 0;">
           <v-select class="project-select" v-model="activeProjectId" :items="options" item-title="label" item-value="id"
             hide-details density="compact" variant="solo" rounded="xl" @update:model-value="onSelectProject">
             <template #selection="{ item }">
@@ -21,12 +21,7 @@
 
         <!-- TABS (DESKTOP) -->
         <v-tabs v-if="!isMobile" v-model="currentTab" density="comfortable" align-tabs="end" class="flex-grow-1 ml-4">
-          <v-tab value="home" @click="goTo('/')">
-            <v-icon start>mdi-view-dashboard-variant</v-icon>
-            <span>Dashboard</span>
-          </v-tab>
-
-          <v-tab value="projetos" @click="goTo('/projetos')">
+          <v-tab value="projetos" @click="goTo('/')">
             <v-icon start>mdi-map-search</v-icon>
             <span>Projetos (Mapa)</span>
           </v-tab>
@@ -36,13 +31,12 @@
             <span>Acompanhamento</span>
           </v-tab>
 
-          <v-tab value="acompanhamento" @click="goToAcompanhamento()">
+          <v-tab value="logout" @click="handleLogout">
             <v-icon start>mdi-logout</v-icon>
             <span>Sair</span>
           </v-tab>
         </v-tabs>
 
-        <!-- BOTÃO HAMBURGER (MOBILE) -->
         <v-app-bar-nav-icon v-if="isMobile" @click="drawer = !drawer">
           <v-icon>
             {{ drawer ? "mdi-close" : "mdi-menu" }}
@@ -54,16 +48,14 @@
     <!-- MENU MOBILE -->
     <v-navigation-drawer v-model="drawer" temporary location="right" width="280">
       <v-list nav density="comfortable">
-        <v-list-item title="Dashboard" prepend-icon="mdi-view-dashboard-variant"
-          @click="navigateMobile('/dashboard')" />
-        <v-list-item title="Projetos (Mapa)" prepend-icon="mdi-map-search" @click="navigateMobile('/projetos')" />
+        <v-list-item title="Projetos (Mapa)" prepend-icon="mdi-map-search" @click="navigateMobile('/')" />
         <v-list-item title="Acompanhamento" prepend-icon="mdi-chart-bell-curve-cumulative"
           @click="navigateMobileAcompanhamento()" />
-        <v-list-item class="my-16" title="Sair" prepend-icon="mdi-logout" @click="navigateMobile('/')" />
+        <v-list-item class="my-16" title="Sair" prepend-icon="mdi-logout"
+          @click="() => { drawer = false, handleLogout() }" />
       </v-list>
     </v-navigation-drawer>
 
-    <!-- Conteúdo principal -->
     <v-main>
       <router-view />
     </v-main>
@@ -75,6 +67,7 @@ import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
 import { useActiveProject } from "./composables/useActiveProject";
+import { useAuth } from "./composables/useAuth";
 
 const { activeProjectId, options, setActiveProject } = useActiveProject();
 
@@ -84,8 +77,15 @@ const { mobile } = useDisplay();
 
 const drawer = ref(false);
 const isMobile = computed(() => mobile.value);
+const isHome = computed(() => route.path === "/login" || route.path === "/")
 
-// ===== TABS =====
+const { logout } = useAuth()
+
+function handleLogout() {
+  logout()
+  router.replace({ name: "login" })
+}
+
 const currentTab = computed({
   get() {
     if (route.path.startsWith("/projetos")) return "projetos";
@@ -95,7 +95,6 @@ const currentTab = computed({
   set() { },
 });
 
-// ===== HELPERS =====
 function acompanhamentoPathFor(projectId: string) {
   return `/acompanhamento/${projectId}`;
 }
@@ -104,18 +103,15 @@ function osPathFor(projectId: string) {
   return `/acompanhamento/${projectId}/os`;
 }
 
-// ===== SELECT =====
 function onSelectProject(id: string) {
   setActiveProject(id);
 
-  // Se estiver dentro do módulo de acompanhamento, mantém o contexto ao trocar
   if (route.path.startsWith("/acompanhamento")) {
     const goingToOs = route.path.endsWith("/os");
     router.push(goingToOs ? osPathFor(id) : acompanhamentoPathFor(id));
   }
 }
 
-// ===== NAVEGAÇÃO =====
 function goTo(path: string) {
   if (route.path !== path) router.push(path);
 }
@@ -148,7 +144,6 @@ function navigateMobileAcompanhamento() {
   font-weight: 800;
 }
 
-/* SELECT */
 .project-select {
   width: min(70vw, 360px);
 }
@@ -175,7 +170,6 @@ span {
   color: black;
 }
 
-/* harmoniza o select com a app-bar */
 :deep(.project-select .v-field) {
   background: rgba(255, 255, 255, 0.95);
 }

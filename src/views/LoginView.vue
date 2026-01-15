@@ -39,11 +39,12 @@
                                         </v-btn>
                                     </template>
                                 </v-text-field>
+                                <p v-if="error" class="error-message">{{ error }}</p>
                             </div>
 
-                            <v-btn class="submit" type="submit" block size="large" color="blue" rounded="lg"
-                                :loading="loading">
-                                Entrar
+                            <v-btn class="submit" :disabled="loading" type="submit" block size="large" color="blue"
+                                rounded="lg" :loading="loading">
+                                {{ loading ? "Entrando..." : "Entrar" }}
                             </v-btn>
 
                             <div class="support">
@@ -69,11 +70,43 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuth } from "../composables/useAuth"
+import axios from "axios";
 
 const email = ref("");
 const password = ref("");
 const showPassword = ref(false);
 const loading = ref(false);
+const error = ref("")
+
+const router = useRouter()
+const { login } = useAuth()
+
+async function onSubmit() {
+    error.value = ""
+    loading.value = true
+
+    try {
+        await login({ email: email.value, password: password.value });
+        router.replace({ name: "projetos" });
+    } catch (e: unknown) {
+        if (axios.isAxiosError(e)) {
+            const apiMsg =
+                (e.response?.data as any)?.message ||
+                (e.response?.data as any)?.error ||
+                e.message;
+
+            error.value = apiMsg || "Falha no login.";
+        } else if (e instanceof Error) {
+            error.value = e.message || "Falha no login.";
+        } else {
+            error.value = "Falha no login.";
+        }
+    } finally {
+        loading.value = false;
+    }
+}
 
 const ADMIN_EMAIL = "victor.oliveira@quantaconsultoria.com";
 
@@ -99,14 +132,6 @@ const gmailLink = computed(() => {
     return `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}`;
 });
 
-async function onSubmit() {
-    loading.value = true;
-    try {
-        console.log("login", { email: email.value, password: password.value });
-    } finally {
-        loading.value = false;
-    }
-}
 </script>
 
 <style scoped>
@@ -194,6 +219,13 @@ async function onSubmit() {
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 6px;
+}
+
+.error-message {
+    color: red;
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 5px;
 }
 
 .link {

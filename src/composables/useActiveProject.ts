@@ -1,5 +1,5 @@
 import { computed, ref } from "vue";
-import { projectOptions, projectsCatalog } from "../components/ProjectTimeline/projectsCatalog";
+import { projectOptions, projectsCatalog } from "../components/ProjectTimeline/helpers/projectsCatalog";
 
 const activeProjectId = ref(projectOptions[0]?.id ?? "BAT01");
 
