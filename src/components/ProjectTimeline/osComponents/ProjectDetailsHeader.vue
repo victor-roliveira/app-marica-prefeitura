@@ -390,9 +390,21 @@ function formatDelayNumber(days: number) {
     background: rgba(245, 158, 11, 0.18);
 }
 
-@media (max-width: 360px) {
+@media (min-width: 1024px) {
     .pd-kpis {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .pd-label {
+        font-size: 12px;
+    }
+
+    .pd-value {
+        font-size: 12px;
+    }
+
+    .pd-chev {
+        margin-left: 90px;
     }
 }
 </style>
