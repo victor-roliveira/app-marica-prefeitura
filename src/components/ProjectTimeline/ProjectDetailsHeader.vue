@@ -54,7 +54,6 @@
                 <v-icon class="pd-chev" size="18">mdi-chevron-right</v-icon>
             </button>
 
-
             <!-- Avanço físico -->
             <button type="button" class="pd-card pd-card-clickable" @click="goToPhysicalProgress"
                 @keydown.enter.prevent="goToPhysicalProgress" @keydown.space.prevent="goToPhysicalProgress"
@@ -131,7 +130,7 @@ const projectId = computed(() => String(route.params.projectId ?? ""));
 const hasReportAction = computed(() => Boolean(props.vm.actions?.reportRoute || props.vm.actions?.onReport));
 const hasOsAction = computed(() => Boolean(props.vm.actions?.osObjectRoute || props.vm.actions?.onOsObject));
 
-function goToDeliveryAnalysis() { // NEW
+function goToDeliveryAnalysis() {
     if (!projectId.value) return;
     router.push({
         name: "project-delivery-analysis",
