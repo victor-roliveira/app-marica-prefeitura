@@ -21,7 +21,7 @@ import TimelineHeader from "./TimelineHeader.vue";
 import TimelineStages from "./TimelineStages.vue";
 import TimelineCanvas from "./TimelineCanvas.vue";
 
-import type { ProjectTimelineData, Stage, StageProgress } from "./helpers/types";
+import type { ProjectTimelineData, Stage, StageProgress } from "../helpers/types";
 
 const props = defineProps<{ data: ProjectTimelineData }>();
 

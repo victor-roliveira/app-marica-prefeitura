@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Stage, StageProgress } from "./helpers/types";
+import type { Stage, StageProgress } from "../helpers/types";
 
 const props = defineProps<{
     stages: Stage[];

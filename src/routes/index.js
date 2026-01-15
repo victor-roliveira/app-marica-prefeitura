@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import ProjectsView from "../views/ProjectsComponent/ProjectsView.vue";
 import TimelineView from "../views/TimelineComponent/TimelineView.vue";
-import OsObjectView from "../components/ProjectTimeline/OsObjectView.vue";
+import OsObjectView from "../components/ProjectTimeline/osComponents/OsObjectView.vue";
 import DeliveryAnalysisView from "../components/ProjectTimeline/deliverayAnalisys/components/DeliveryAnalysisView.vue";
 import PhysicalProgressView from "../components/ProjectTimeline/physicalProgress/components/PhysicalProgressView.vue";
 import InterferencesView from "../components/ProjectTimeline/interferences/components/InterferencesView.vue";

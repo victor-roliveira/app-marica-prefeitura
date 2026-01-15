@@ -145,7 +145,7 @@
 import { computed, ref, onMounted, onBeforeUnmount } from "vue";
 import TimelineInauguration from "./TimelineInauguration.vue";
 import TimelineStages from "./TimelineStages.vue";
-import type { Alteration, ISODate, Milestone, Project, Stage, StageProgress } from "./types";
+import type { Alteration, ISODate, Milestone, Project, Stage, StageProgress } from "../helpers/types";
 
 const props = defineProps<{
     project: Project;

@@ -164,8 +164,8 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-import type { Alteration, ISODate, Milestone, Project, Stage, StageProgress } from "./helpers/types";
-import TimelineAxis from "../../components/ProjectTimeline/TimelineAxis.vue";
+import type { Alteration, ISODate, Milestone, Project, Stage, StageProgress } from "../helpers/types";
+import TimelineAxis from "../../ProjectTimeline/osComponents/TimelineAxis.vue";
 
 const props = defineProps<{
     project: Project;

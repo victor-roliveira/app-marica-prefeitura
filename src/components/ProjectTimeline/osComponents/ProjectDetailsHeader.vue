@@ -120,7 +120,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import type { ProjectDetailsViewModel } from "./helpers/projectDetailsTypes";
+import type { ProjectDetailsViewModel } from "../helpers/projectDetailsTypes";
 
 const router = useRouter();
 const route = useRoute();

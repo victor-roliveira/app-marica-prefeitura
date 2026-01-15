@@ -124,7 +124,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useActiveProject } from "../../composables/useActiveProject";
+import { useActiveProject } from "../../../composables/useActiveProject";
 
 const route = useRoute();
 const router = useRouter();
@@ -132,7 +132,6 @@ const { screenData, setActiveProjectId } = useActiveProject();
 
 const projectId = computed(() => String(route.params.projectId || ""));
 
-// garante que ao entrar direto na rota /os o projeto ativo é sincronizado
 setActiveProjectId(projectId.value);
 
 const os = computed(() => screenData.value?.os ?? null);

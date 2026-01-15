@@ -12,8 +12,8 @@ import { computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useActiveProject } from "../../composables/useActiveProject";
 
-import ProjectDetailsHeader from "../../components/ProjectTimeline/ProjectDetailsHeader.vue";
-import ProjectTimeline from "../../components/ProjectTimeline/ProjectTimeline.vue";
+import ProjectDetailsHeader from "../../components/ProjectTimeline/osComponents/ProjectDetailsHeader.vue";
+import ProjectTimeline from "../../components/ProjectTimeline/osComponents/ProjectTimeline.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -28,7 +28,6 @@ watch(
     if (!id) return;
     setActiveProjectId(id);
 
-    // se id inválido, redireciona para default
     if (!screenData.value) router.replace("/acompanhamento/BAT01");
   },
   { immediate: true }

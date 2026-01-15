@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { Stage, StageProgress, TimelineConfig } from "./helpers/types";
+import type { Stage, StageProgress, TimelineConfig } from "../helpers/types";
 
 const props = defineProps<{
     stages: Stage[];
