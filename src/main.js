@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './routes/index'
 import vuetify from './plugins/vuetify' 
+import "./plugins/echarts";
 import '@mdi/font/css/materialdesignicons.css' 
 import 'vuetify/styles'  
 

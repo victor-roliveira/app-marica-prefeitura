@@ -10,6 +10,10 @@
 
             <TimelineCanvas :project="data.project" :stages="sortedStages" :progress="data.progress"
                 :milestones="data.milestones" :alterations="data.alterations" :config="data.config" />
+
+            <div class="charts-physical-impact">
+                <ChartsGrid />
+            </div>
         </v-card-text>
     </v-card>
 </template>
@@ -22,6 +26,7 @@ import TimelineStages from "./TimelineStages.vue";
 import TimelineCanvas from "./TimelineCanvas.vue";
 
 import type { ProjectTimelineData, Stage, StageProgress } from "../helpers/types";
+import ChartsGrid from "../ChartsPhysicalAndImpact/ChartsGrid.vue";
 
 const props = defineProps<{ data: ProjectTimelineData }>();
 
@@ -52,7 +57,6 @@ const showEmojis = computed(() => props.data.config?.show_icons_checked ?? true)
 }
 
 .pt-root {
-    /* mobile defaults já existentes */
     --stage-col-width: 18px;
     --stage-gap: 10px;
 }
@@ -62,9 +66,12 @@ const showEmojis = computed(() => props.data.config?.show_icons_checked ?? true)
     padding-right: 60px;
 }
 
+.charts-physical-impact {
+    margin-top: 25px;
+}
+
 @media (min-width: 960px) {
     .pt-root {
-        /* desktop: mais espaço, mantém alinhamento entre topo e gantt */
         --stage-col-width: 34px;
         --stage-gap: 16px;
     }

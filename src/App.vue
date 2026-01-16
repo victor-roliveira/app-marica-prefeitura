@@ -1,58 +1,66 @@
 <template>
   <v-app>
-    <!-- Barra de navegação -->
-    <v-app-bar class="text-white" color="blue" elevation="4">
-      <v-container class="d-flex align-center justify-space-between">
-        <!-- SELECT DE OBRAS -->
-        <div v-if="!isHome" class="d-flex align-start" style="min-width: 0;">
-          <v-select class="project-select" v-model="activeProjectId" :items="options" item-title="label" item-value="id"
-            hide-details density="compact" variant="solo" rounded="xl" @update:model-value="onSelectProject">
-            <template #selection="{ item }">
-              <span class="project-select-text">
-                {{ item.raw.label }}
-              </span>
-            </template>
+    <v-app-bar class="text-white" color="red" elevation="4">
+      <v-container class="pa-0" fluid>
+        <v-row no-gutters align="center">
 
-            <template #item="{ props, item }">
-              <v-list-item v-bind="props" :title="item.raw.label" :subtitle="item.raw.subtitle" />
-            </template>
-          </v-select>
-        </div>
+          <v-col cols="0" md="4" class="d-none d-md-flex"></v-col>
 
-        <!-- TABS (DESKTOP) -->
-        <v-tabs v-if="!isMobile" v-model="currentTab" density="comfortable" align-tabs="end" class="flex-grow-1 ml-4">
-          <v-tab value="projetos" @click="goTo('/projetos-mapa')">
-            <v-icon start>mdi-map-search</v-icon>
-            <span>Projetos (Mapa)</span>
-          </v-tab>
+          <v-col cols="10" md="4" class="d-flex align-center justify-start justify-md-center pl-4 pl-md-0">
+            <div v-if="!isHome" :style="isMobile ? 'width: 100%' : 'width: 100%; max-width: 400px;'">
+              <v-select class="project-select" :class="isMobile ? 'text-left' : 'text-center'" v-model="activeProjectId"
+                :items="options" item-title="label" item-value="id" hide-details density="compact" variant="underlined"
+                @update:model-value="onSelectProject" placeholder="Selecione uma obra">
+                <template #selection="{ item }">
+                  <span class="project-select-text text-white text-truncate font-weight-bold">
+                    {{ item.raw.label }}
+                  </span>
+                </template>
 
-          <v-tab value="acompanhamento" @click="goToAcompanhamento()">
-            <v-icon start>mdi-view-dashboard</v-icon>
-            <span>Acompanhamento</span>
-          </v-tab>
+                <template #item="{ props, item }">
+                  <v-list-item v-bind="props" :title="item.raw.label" :subtitle="item.raw.subtitle" />
+                </template>
+              </v-select>
+            </div>
+          </v-col>
 
-          <v-tab value="logout" @click="handleLogout">
-            <v-icon start>mdi-logout</v-icon>
-            <span>Sair</span>
-          </v-tab>
-        </v-tabs>
+          <v-col cols="2" md="4" class="d-flex align-center justify-end pr-2">
 
-        <v-app-bar-nav-icon v-if="isMobile" @click="drawer = !drawer">
-          <v-icon>
-            {{ drawer ? "mdi-close" : "mdi-menu" }}
-          </v-icon>
-        </v-app-bar-nav-icon>
+            <v-tabs v-if="!isMobile" v-model="currentTab" density="comfortable" align-tabs="end" class="ml-auto">
+              <v-tab value="projetos" @click="goTo('/projetos-mapa')">
+                <v-icon start>mdi-map-search</v-icon>
+                <span>Projetos</span>
+              </v-tab>
+
+              <v-tab value="acompanhamento" @click="goToAcompanhamento()">
+                <v-icon start>mdi-view-dashboard</v-icon>
+                <span>Acompanhamento</span>
+              </v-tab>
+
+              <v-tab value="logout" @click="handleLogout">
+                <v-icon start>mdi-logout</v-icon>
+                <span>Sair</span>
+              </v-tab>
+            </v-tabs>
+
+            <v-app-bar-nav-icon v-if="isMobile" @click="drawer = !drawer">
+              <v-icon color="white" size="large">
+                {{ drawer ? "mdi-close" : "mdi-menu" }}
+              </v-icon>
+            </v-app-bar-nav-icon>
+          </v-col>
+
+        </v-row>
       </v-container>
     </v-app-bar>
 
-    <!-- MENU MOBILE -->
     <v-navigation-drawer v-model="drawer" temporary location="right" width="280">
       <v-list nav density="comfortable">
         <v-list-item title="Projetos (Mapa)" prepend-icon="mdi-map-search" @click="navigateMobile('/projetos-mapa')" />
-        <v-list-item title="Acompanhamento" prepend-icon="mdi-view-dashboard"
-          @click="navigateMobileAcompanhamento()" />
-        <v-list-item class="my-16" title="Sair" prepend-icon="mdi-logout"
-          @click="() => { drawer = false, handleLogout() }" />
+        <v-list-item title="Acompanhamento" prepend-icon="mdi-view-dashboard" @click="navigateMobileAcompanhamento()" />
+
+        <v-list-item class="my-4" title="Sair" prepend-icon="mdi-logout"
+          @click="() => { drawer = false; handleLogout() }" />
       </v-list>
     </v-navigation-drawer>
 
@@ -149,13 +157,17 @@ function navigateMobileAcompanhamento() {
 }
 
 .project-select-text {
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.3px;
   text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: black;
+  color: white;
+}
+
+.v-text-field {
+  font-family: 'Montserrat';
 }
 
 .v-icon,
@@ -169,9 +181,5 @@ span {
 
 .mdi-close {
   color: white;
-}
-
-:deep(.project-select .v-field) {
-  background: rgba(255, 255, 255, 0.95);
 }
 </style>

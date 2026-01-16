@@ -30,7 +30,7 @@
                             <div v-for="row in rows" :key="row.step.step_id" class="gd-row"
                                 :style="{ height: rowHeightPx + 'px' }">
                                 <div class="gd-track">
-                                    <!-- label acima da barra (sempre visível, limpo e contido) -->
+                                    <!-- label acima da barra -->
                                     <div class="gd-row-label" :style="{ left: dateToXPct(row.baselineStart) + '%' }">
                                         <span class="gd-row-label-name">
                                             {{ row.step.step_name.toUpperCase() }}
@@ -47,8 +47,8 @@
                                         <div class="gd-bar-progress"
                                             :style="{ width: (row.progress?.advance_percent ?? 0) + '%' }" />
 
-                                        <!-- status icon no fim -->
-                                        <div class="gd-end-icon" :title="row.statusTitle">
+                                        <!-- status icon no fim (AGORA SÓ QUANDO RELEVANTE) -->
+                                        <div v-if="row.statusIcon" class="gd-end-icon" :title="row.statusTitle">
                                             <span class="gd-end-icon-inner">{{ row.statusIcon }}</span>
                                         </div>
                                     </div>
@@ -60,7 +60,7 @@
                                         @mouseenter="showTip(row, $event)" @mousemove="moveTip($event)"
                                         @mouseleave="hideTip" />
 
-                                    <!-- milestones: marcadores discretos (sem texto, sem “ENTREGA”) -->
+                                    <!-- milestones: marcadores discretos -->
                                     <button v-for="ms in row.milestonesInRange" :key="ms.milestone_id" class="gd-ms"
                                         type="button" :style="{ left: dateToXPct(ms.milestone_date) + '%' }"
                                         @mouseenter="showMilestoneTip(ms, $event)" @mousemove="moveTip($event)"
@@ -71,7 +71,7 @@
                                         :style="{ left: dateToXPct(row.bubbleDate) + '%' }"
                                         @click="onAlteration(row.bubbleAlteration)">
                                         <span class="gd-bubble-date">{{ formatBR(row.bubbleDate) }}</span>
-                                        <span class="gd-bubble-icon">{{ row.bubbleAlteration?.icon ?? "⏸️" }}</span>
+                                        <span class="gd-bubble-icon">{{ row.bubbleAlteration?.icon ?? "🔄️" }}</span>
                                     </button>
                                 </div>
                             </div>
@@ -308,13 +308,14 @@ const rows = computed(() => {
 
         const showChecked = props.config?.show_icons_checked ?? true;
 
-        let statusIcon = "⏸️";
-        let statusTitle = "Em andamento";
+        let statusIcon: string | null = null;
+        let statusTitle = "";
+
         if (prog?.completed) {
             statusIcon = showChecked ? (step.checked_icon ?? "✅") : "✓";
             statusTitle = "Concluído";
         } else if (bubbleAlteration) {
-            statusIcon = bubbleAlteration.icon ?? "⏸️";
+            statusIcon = bubbleAlteration.icon ?? "🔄️";
             statusTitle = `Alteração #${bubbleAlteration.change_number}`;
         }
 
@@ -408,6 +409,14 @@ function onAlteration(a: Alteration | null) {
     gap: 12px;
 }
 
+.gd-title {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #0b1b34;
+    font-size: 18px;
+    line-height: 1.2;
+}
+
 .gd-subtitle {
     margin-top: 2px;
     font-size: 12px;
@@ -485,7 +494,6 @@ function onAlteration(a: Alteration | null) {
 .gd-grid {
     position: absolute;
     inset: 26px 0 0 0;
-    /* começa abaixo do eixo */
     pointer-events: none;
     z-index: 0;
 }
@@ -512,10 +520,10 @@ function onAlteration(a: Alteration | null) {
 .gd-track {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 65%;
 }
 
-/* label: contido e sempre legível */
+/* label */
 .gd-row-label {
     position: absolute;
     top: 8px;
@@ -595,7 +603,7 @@ function onAlteration(a: Alteration | null) {
     line-height: 1;
 }
 
-/* milestone marker (discreto) */
+/* milestone marker */
 .gd-ms {
     position: absolute;
     top: 62%;
