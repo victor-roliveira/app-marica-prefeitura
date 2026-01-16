@@ -93,7 +93,7 @@ const option = computed(() => ({
         {
             name: "Impacto",
             type: "pie",
-            radius: ["62%", "82%"],
+            radius: ["40%", "85%"],
             center: ["30%", "50%"],
             avoidLabelOverlap: true,
             label: { show: false },

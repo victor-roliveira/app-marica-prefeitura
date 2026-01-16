@@ -79,7 +79,7 @@
                 <div class="section-title">{{ vm.impactTitle }}</div>
 
                 <v-card class="card" rounded="xl" elevation="2">
-                    <v-card-text class="card-body">
+                    <v-card-text class="card-body center-body">
                         <ImpactDonutChart :items="vm.impact.items" :totalPctLabel="vm.impact.totalPctLabel"
                             :subtitle="vm.impact.subtitle" />
                     </v-card-text>
@@ -107,7 +107,7 @@ import { useRoute, useRouter } from "vue-router";
 import ImpactDonutChart from "./charts/ImpactDonutChart.vue";
 
 import type { DeliveryAnalysisViewModel, DeliveryStatusTone } from "../types";
-import { deliveryAnalysisMockByProjectId, deliveryAnalysisFallbackMock } from "../mock"; 
+import { deliveryAnalysisMockByProjectId, deliveryAnalysisFallbackMock } from "../mock";
 import PlannedRealizedChart from "./PlannedRealizedChart.vue";
 
 const route = useRoute();
@@ -178,9 +178,25 @@ function toneFillClass(t: DeliveryStatusTone) {
 
 .content {
     padding: 14px 14px 20px;
+    /* Grid layout */
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+@media (min-width: 960px) {
+    .content {
+        grid-template-columns: 1fr 1fr;
+        /* Nota: Removi o align-items: start para permitir o 'stretch' (padrão) */
+    }
+}
+
+/* --- MUDANÇA: Wrapper da seção --- */
+.section {
+    /* Torna a seção um flex container vertical que ocupa 100% da altura da célula do grid */
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    height: 100%;
 }
 
 .section-title {
@@ -188,6 +204,8 @@ function toneFillClass(t: DeliveryStatusTone) {
     font-weight: 900;
     color: #0e1730;
     margin: 6px 2px 10px;
+    /* Impede que o título cresça ou encolha */
+    flex: 0 0 auto;
 }
 
 .section-row {
@@ -195,6 +213,7 @@ function toneFillClass(t: DeliveryStatusTone) {
     justify-content: space-between;
     align-items: baseline;
     gap: 10px;
+    flex: 0 0 auto;
 }
 
 .tag {
@@ -205,10 +224,23 @@ function toneFillClass(t: DeliveryStatusTone) {
 
 .card {
     border-radius: 18px;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .card-body {
     padding: 14px;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.center-body {
+    justify-content: center;
+    align-items: center;
 }
 
 .deadline-grid {
@@ -311,7 +343,7 @@ function toneFillClass(t: DeliveryStatusTone) {
     border-radius: 999px;
 }
 
-/* TEXTO (somente cor) */
+/* CORES */
 .tone-text-critical {
     color: #ef4444;
 }

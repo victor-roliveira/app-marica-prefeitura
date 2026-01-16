@@ -406,7 +406,7 @@ function formatDelayNumber(days: number) {
     }
 
     .pd-chev {
-        margin-left: 70px;
+        margin-left: 150px;
         transition: ease-in-out 0.3s;
     }
 

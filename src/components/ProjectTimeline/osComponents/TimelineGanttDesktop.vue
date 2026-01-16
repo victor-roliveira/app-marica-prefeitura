@@ -322,7 +322,7 @@ const rows = computed(() => {
         return {
             step,
             progress: prog,
-            color: step.default_color ?? "#2196F3",
+            color: "#B1D48C",
             alterColor: bubbleAlteration?.change_color ?? "#FF9800",
             baselineStart,
             baselineEnd,
@@ -576,12 +576,12 @@ function onAlteration(a: Alteration | null) {
 
 .gd-bar-progress {
     height: 100%;
-    background: rgba(0, 0, 0, 0.14);
+    background: #1CA656;
     border-radius: 999px;
 }
 
 .gd-extension {
-    opacity: 0.95;
+    opacity: 0.6;
 }
 
 .gd-end-icon {

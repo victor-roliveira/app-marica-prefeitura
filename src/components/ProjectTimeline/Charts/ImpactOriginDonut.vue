@@ -72,11 +72,11 @@ const option = computed(() => ({
     series: [
         {
             type: "pie",
-            radius: isCompact.value ? ["55%", "72%"] : ["62%", "82%"],
+            radius: isCompact.value ? ["35%", "75%"] : ["40%", "85%"],
             center: ["50%", isCompact.value ? "42%" : "44%"],
             label: { show: false },
             labelLine: { show: false },
-            data: seriesData.value, // ✅ agora existe
+            data: seriesData.value,
         },
     ],
 

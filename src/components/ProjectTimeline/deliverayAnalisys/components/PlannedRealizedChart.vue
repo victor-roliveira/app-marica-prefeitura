@@ -33,7 +33,6 @@ import {
     GridComponent,
     TooltipComponent,
     LegendComponent,
-    // TitleComponent, // se quiser usar title do echarts
 } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 
@@ -68,7 +67,6 @@ const option = computed(() => ({
         trigger: "axis",
         axisPointer: { type: "shadow" },
         formatter: (params: any) => {
-            // params: [{seriesName, value, axisValue, ...}, ...]
             const title = params?.[0]?.axisValue ?? "";
             const a = params?.find((p: any) => p.seriesName === props.vm.legendPlannedLabel)?.value ?? 0;
             const b = params?.find((p: any) => p.seriesName === props.vm.legendRealizedLabel)?.value ?? 0;
