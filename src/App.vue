@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <!-- Barra de navegação -->
-    <v-app-bar class="text-white" color="white" elevation="4">
+    <v-app-bar class="text-white" color="blue" elevation="4">
       <v-container class="d-flex align-center justify-space-between">
         <!-- SELECT DE OBRAS -->
         <div v-if="!isHome" class="d-flex align-start" style="min-width: 0;">
@@ -21,7 +21,7 @@
 
         <!-- TABS (DESKTOP) -->
         <v-tabs v-if="!isMobile" v-model="currentTab" density="comfortable" align-tabs="end" class="flex-grow-1 ml-4">
-          <v-tab value="projetos" @click="goTo('/')">
+          <v-tab value="projetos" @click="goTo('/projetos-mapa')">
             <v-icon start>mdi-map-search</v-icon>
             <span>Projetos (Mapa)</span>
           </v-tab>
@@ -48,7 +48,7 @@
     <!-- MENU MOBILE -->
     <v-navigation-drawer v-model="drawer" temporary location="right" width="280">
       <v-list nav density="comfortable">
-        <v-list-item title="Projetos (Mapa)" prepend-icon="mdi-map-search" @click="navigateMobile('/')" />
+        <v-list-item title="Projetos (Mapa)" prepend-icon="mdi-map-search" @click="navigateMobile('/projetos-mapa')" />
         <v-list-item title="Acompanhamento" prepend-icon="mdi-view-dashboard"
           @click="navigateMobileAcompanhamento()" />
         <v-list-item class="my-16" title="Sair" prepend-icon="mdi-logout"
@@ -77,7 +77,7 @@ const { mobile } = useDisplay();
 
 const drawer = ref(false);
 const isMobile = computed(() => mobile.value);
-const isHome = computed(() => route.path === "/login" || route.path === "/")
+const isHome = computed(() => route.path === "/login" || route.path === "/projetos-mapa")
 
 const { logout } = useAuth()
 
@@ -88,7 +88,7 @@ function handleLogout() {
 
 const currentTab = computed({
   get() {
-    if (route.path.startsWith("/projetos")) return "projetos";
+    if (route.path.startsWith("/projetos-mapa")) return "projetos";
     if (route.path.startsWith("/acompanhamento")) return "acompanhamento";
     return "home";
   },
@@ -155,19 +155,20 @@ function navigateMobileAcompanhamento() {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: black;
 }
 
 .v-icon,
 span {
-  color: rgb(0, 0, 0);
+  color: white;
 }
 
 .mdi-menu {
-  color: black;
+  color: white;
 }
 
 .mdi-close {
-  color: black;
+  color: white;
 }
 
 :deep(.project-select .v-field) {

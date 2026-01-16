@@ -3,122 +3,126 @@
         <!-- Header -->
         <div class="gd-head">
             <div>
-
                 <div class="gd-subtitle">Cronograma de Marcos e Entregas</div>
             </div>
         </div>
 
-        <!-- Chart -->
+        <!-- Card -->
         <div class="gd-card">
-            <div class="gd-chart">
-                <!-- Left labels -->
-                <div class="gd-left">
-                    <div class="gd-left-spacer" />
-                    <div v-for="row in rows" :key="row.step.step_id" class="gd-left-row"
-                        :style="{ height: rowHeightPx + 'px' }">
-                        <div class="gd-step-name">
-                            <span class="gd-step-name-text">
-                                {{ row.step.step_name.toUpperCase() }}
-                            </span>
-                            <span v-if="row.progress?.show_percent" class="gd-step-pct">
-                                ({{ row.progress?.advance_percent ?? 0 }}%)
-                            </span>
+            <div class="gd-scroll">
+                <div class="gd-canvas" :style="{ minWidth: canvasMinWidthPx + 'px' }">
+                    <div class="gd-chart">
+                        <!-- Axis (MESES) -->
+                        <div class="gd-axis">
+                            <div v-for="m in months" :key="m.key" class="gd-axis-tick" :style="{ left: m.xPct + '%' }">
+                                <div class="gd-axis-label">{{ m.label }}</div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Inaug row label -->
-                    <div class="gd-left-row" :style="{ height: rowHeightPx + 'px' }">
-                        <div class="gd-step-name">
-                            <span class="gd-step-name-text">INAUGURAÇÃO</span>
+                        <!-- Grid -->
+                        <div class="gd-grid">
+                            <div v-for="m in months" :key="m.key" class="gd-grid-line"
+                                :style="{ left: m.xPct + '%' }" />
                         </div>
-                    </div>
-                </div>
 
-                <!-- Right timeline -->
-                <div class="gd-right">
-                    <!-- top axis -->
-                    <div class="gd-axis" :style="{ height: axisHeightPx + 'px' }">
-                        <div v-for="m in months" :key="m.key" class="gd-axis-tick" :style="{ left: m.xPct + '%' }">
-                            <div class="gd-axis-label">{{ m.label }}</div>
-                        </div>
-                    </div>
-
-                    <!-- grid lines -->
-                    <div class="gd-grid">
-                        <div v-for="m in months" :key="m.key" class="gd-grid-line" :style="{ left: m.xPct + '%' }" />
-                    </div>
-
-                    <!-- rows -->
-                    <div class="gd-rows">
-                        <div v-for="row in rows" :key="row.step.step_id" class="gd-row"
-                            :style="{ height: rowHeightPx + 'px' }">
-                            <div class="gd-track">
-                                <!-- baseline bar -->
-                                <div class="gd-bar" :style="barStyle(row.baselineStart, row.baselineEnd, row.color)">
-                                    <!-- progress overlay -->
-                                    <div class="gd-bar-progress"
-                                        :style="{ width: (row.progress?.advance_percent ?? 0) + '%' }" />
-
-                                    <!-- milestones chips that fall inside this stage window -->
-                                    <button v-for="ms in row.milestonesInRange" :key="ms.milestone_id" class="gd-chip"
-                                        type="button" :style="{ left: dateToXPct(ms.milestone_date) + '%' }"
-                                        @click="onMilestone(ms)">
-                                        {{ ms.description }}
-                                    </button>
-
-                                    <!-- status icon on end -->
-                                    <div class="gd-end-icon" :title="row.statusTitle">
-                                        <span class="gd-end-icon-inner">
-                                            {{ row.statusIcon }}
+                        <!-- Rows -->
+                        <div class="gd-rows">
+                            <div v-for="row in rows" :key="row.step.step_id" class="gd-row"
+                                :style="{ height: rowHeightPx + 'px' }">
+                                <div class="gd-track">
+                                    <!-- label acima da barra (sempre visível, limpo e contido) -->
+                                    <div class="gd-row-label" :style="{ left: dateToXPct(row.baselineStart) + '%' }">
+                                        <span class="gd-row-label-name">
+                                            {{ row.step.step_name.toUpperCase() }}
+                                        </span>
+                                        <span v-if="row.progress?.show_percent" class="gd-row-label-pct">
+                                            ({{ row.progress?.advance_percent ?? 0 }}%)
                                         </span>
                                     </div>
+
+                                    <!-- baseline bar -->
+                                    <div class="gd-bar" :style="barStyle(row.baselineStart, row.baselineEnd, row.color)"
+                                        @mouseenter="showTip(row, $event)" @mousemove="moveTip($event)"
+                                        @mouseleave="hideTip">
+                                        <div class="gd-bar-progress"
+                                            :style="{ width: (row.progress?.advance_percent ?? 0) + '%' }" />
+
+                                        <!-- status icon no fim -->
+                                        <div class="gd-end-icon" :title="row.statusTitle">
+                                            <span class="gd-end-icon-inner">{{ row.statusIcon }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- extension (atraso) -->
+                                    <div v-if="row.extensionEnd && isAfter(row.extensionEnd, row.baselineEnd)"
+                                        class="gd-extension"
+                                        :style="barStyle(row.baselineEnd, row.extensionEnd, row.alterColor)"
+                                        @mouseenter="showTip(row, $event)" @mousemove="moveTip($event)"
+                                        @mouseleave="hideTip" />
+
+                                    <!-- milestones: marcadores discretos (sem texto, sem “ENTREGA”) -->
+                                    <button v-for="ms in row.milestonesInRange" :key="ms.milestone_id" class="gd-ms"
+                                        type="button" :style="{ left: dateToXPct(ms.milestone_date) + '%' }"
+                                        @mouseenter="showMilestoneTip(ms, $event)" @mousemove="moveTip($event)"
+                                        @mouseleave="hideTip" @click="onMilestone(ms)" aria-label="Milestone" />
+
+                                    <!-- bubble no fim do atraso -->
+                                    <button v-if="row.bubbleDate" class="gd-bubble" type="button"
+                                        :style="{ left: dateToXPct(row.bubbleDate) + '%' }"
+                                        @click="onAlteration(row.bubbleAlteration)">
+                                        <span class="gd-bubble-date">{{ formatBR(row.bubbleDate) }}</span>
+                                        <span class="gd-bubble-icon">{{ row.bubbleAlteration?.icon ?? "⏸️" }}</span>
+                                    </button>
                                 </div>
+                            </div>
 
-                                <!-- extension (delay/alteration) ALWAYS after baseline end -->
-                                <div v-if="row.extensionEnd && isAfter(row.extensionEnd, row.baselineEnd)"
-                                    class="gd-extension"
-                                    :style="barStyle(row.baselineEnd, row.extensionEnd, row.alterColor)"
-                                    :title="row.alterTitle" />
+                            <!-- Inauguração -->
+                            <div class="gd-row" :style="{ height: rowHeightPx + 'px' }">
+                                <div class="gd-track">
+                                    <div class="gd-row-label" :style="{ left: dateToXPct(inaugStart) + '%' }">
+                                        <span class="gd-row-label-name">INAUGURAÇÃO</span>
+                                    </div>
 
-                                <!-- alteration bubble at extension end -->
-                                <button v-if="row.bubbleDate" class="gd-bubble" type="button"
-                                    :style="{ left: dateToXPct(row.bubbleDate) + '%' }"
-                                    @click="onAlteration(row.bubbleAlteration)">
-                                    <span class="gd-bubble-date">{{ formatBR(row.bubbleDate) }}</span>
-                                    <span class="gd-bubble-icon">{{ row.bubbleAlteration?.icon ?? "⏸️" }}</span>
-                                </button>
+                                    <div class="gd-bar" :style="barStyle(inaugStart, inaugEnd, inaugColor)"
+                                        @mouseenter="showInaugTip($event)" @mousemove="moveTip($event)"
+                                        @mouseleave="hideTip">
+                                        <div class="gd-end-icon" title="Inauguração">
+                                            <span class="gd-end-icon-inner">🏁</span>
+                                        </div>
+                                    </div>
+
+                                    <button class="gd-bubble" type="button"
+                                        :style="{ left: dateToXPct(project.inauguration_date) + '%' }" @click.prevent>
+                                        <span class="gd-bubble-date">{{ formatBR(project.inauguration_date) }}</span>
+                                        <span class="gd-bubble-icon">⏱️</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Inaug row -->
-                        <div class="gd-row" :style="{ height: rowHeightPx + 'px' }">
-                            <div class="gd-track">
-                                <div class="gd-bar" :style="barStyle(inaugStart, inaugEnd, inaugColor)">
-                                    <div class="gd-end-icon" :title="'Inauguração'">
-                                        <span class="gd-end-icon-inner">🏁</span>
-                                    </div>
-                                </div>
-
-                                <button class="gd-bubble" type="button"
-                                    :style="{ left: dateToXPct(project.inauguration_date) + '%' }" @click.prevent>
-                                    <span class="gd-bubble-date">{{ formatBR(project.inauguration_date) }}</span>
-                                    <span class="gd-bubble-icon">⏱️</span>
-                                </button>
-                            </div>
+                        <!-- Tooltip -->
+                        <div v-if="tip.open" class="gd-tooltip" :style="{ left: tip.x + 'px', top: tip.y + 'px' }">
+                            <div class="gd-tooltip-title">{{ tip.title }}</div>
+                            <div class="gd-tooltip-sub">{{ tip.subtitle }}</div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- dialogs (placeholder) -->
-            <!-- Você pode plugar seu v-dialog aqui depois -->
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import type { Alteration, ISODate, Milestone, Project, Stage, StageProgress, TimelineConfig } from "../helpers/types";
+import { computed, reactive } from "vue";
+import type {
+    Alteration,
+    ISODate,
+    Milestone,
+    Project,
+    Stage,
+    StageProgress,
+    TimelineConfig,
+} from "../helpers/types";
 
 const props = defineProps<{
     project: Project;
@@ -131,47 +135,39 @@ const props = defineProps<{
     inaugurColor?: string;
 }>();
 
-/* ---------- config ---------- */
-const rowHeightPx = computed(() => props.config?.height_bar_step ?? 32);
-const axisHeightPx = 34;
+/** Desktop limpo: altura fixa por linha para evitar sobreposição */
+const rowHeightPx = computed(() => 56);
+const inaugColor = computed(
+    () => props.inaugurColor ?? props.config?.color_inauguration ?? "#0A2A66"
+);
 
-const inaugColor = computed(() => props.inaugurColor ?? props.config?.color_inauguration ?? "#0A2A66");
-
-/* ---------- date helpers ---------- */
+/* ---------------- dates ---------------- */
 function parseISO(d: ISODate): Date {
-    // ISODate = "YYYY-MM-DD"
     const [y, m, day] = d.split("-").map((x) => Number(x));
     return new Date(y, (m ?? 1) - 1, day ?? 1);
 }
-
 function toISO(d: Date): ISODate {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, "0");
     const day = String(d.getDate()).padStart(2, "0");
     return `${y}-${m}-${day}`;
 }
-
 function startOfMonth(d: Date): Date {
     return new Date(d.getFullYear(), d.getMonth(), 1);
 }
-
 function addMonths(d: Date, n: number): Date {
     return new Date(d.getFullYear(), d.getMonth() + n, 1);
 }
-
 function daysBetween(a: Date, b: Date): number {
     const ms = b.getTime() - a.getTime();
     return Math.round(ms / (1000 * 60 * 60 * 24));
 }
-
 function clamp(n: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, n));
 }
-
 function isAfter(a: ISODate, b: ISODate): boolean {
     return parseISO(a).getTime() > parseISO(b).getTime();
 }
-
 function formatBR(d: ISODate): string {
     const dt = parseISO(d);
     const dd = String(dt.getDate()).padStart(2, "0");
@@ -179,7 +175,7 @@ function formatBR(d: ISODate): string {
     return `${dd}/${mm}`;
 }
 
-/* ---------- domain range (timeline start/end) ---------- */
+/* ---------------- timeline domain ---------------- */
 const domainStart = computed(() => {
     const dates: ISODate[] = [
         props.project.start_date,
@@ -190,10 +186,7 @@ const domainStart = computed(() => {
 
     let min = dates[0] ?? props.project.start_date;
     for (const d of dates) if (parseISO(d) < parseISO(min)) min = d;
-
-    // “respiro” para ficar parecido com a imagem
-    const dt = startOfMonth(parseISO(min));
-    return toISO(dt);
+    return toISO(startOfMonth(parseISO(min)));
 });
 
 const domainEnd = computed(() => {
@@ -208,15 +201,8 @@ const domainEnd = computed(() => {
     let max = dates[0] ?? props.project.end_date;
     for (const d of dates) if (parseISO(d) > parseISO(max)) max = d;
 
-    // fecha no mês para o grid ficar limpo
     const dt = startOfMonth(parseISO(max));
-    return toISO(addMonths(dt, 1)); // fim no início do mês seguinte
-});
-
-const domainDays = computed(() => {
-    const a = parseISO(domainStart.value);
-    const b = parseISO(domainEnd.value);
-    return Math.max(1, daysBetween(a, b));
+    return toISO(addMonths(dt, 1));
 });
 
 function dateToXPct(date: ISODate): number {
@@ -230,15 +216,23 @@ function dateToXPct(date: ISODate): number {
 function barStyle(start: ISODate, end: ISODate, color: string) {
     const left = dateToXPct(start);
     const right = dateToXPct(end);
-    const width = Math.max(0.5, right - left); // evita sumir quando muito curto
-    return {
-        left: left + "%",
-        width: width + "%",
-        backgroundColor: color,
-    };
+    const width = Math.max(0.8, right - left);
+    return { left: left + "%", width: width + "%", backgroundColor: color };
 }
 
-/* ---------- months grid ---------- */
+/* ---------------- canvas width (scroll) ---------------- */
+const domainDays = computed(() => {
+    const a = parseISO(domainStart.value);
+    const b = parseISO(domainEnd.value);
+    return Math.max(1, daysBetween(a, b));
+});
+const pxPerDay = computed(() => 3.2);
+const canvasMinWidthPx = computed(() => {
+    const base = Math.round(domainDays.value * pxPerDay.value);
+    return Math.max(1400, base);
+});
+
+/* ---------------- month axis/grid ---------------- */
 const months = computed(() => {
     const start = parseISO(domainStart.value);
     const end = parseISO(domainEnd.value);
@@ -246,26 +240,30 @@ const months = computed(() => {
     const items: Array<{ key: string; label: string; xPct: number }> = [];
     let cur = startOfMonth(start);
 
-    // inclui ticks até passar do end
     for (let i = 0; i < 200; i++) {
         if (cur.getTime() > end.getTime()) break;
-
         const key = `${cur.getFullYear()}-${cur.getMonth() + 1}`;
         const label = cur.toLocaleDateString("pt-BR", { month: "short" }).toUpperCase();
-        const iso = toISO(cur);
-        items.push({ key, label, xPct: dateToXPct(iso) });
-
+        items.push({ key, label, xPct: dateToXPct(toISO(cur)) });
         cur = addMonths(cur, 1);
     }
 
     return items;
 });
 
-/* ---------- rows assembly ---------- */
-const stagesSorted = computed(() => [...props.stages].sort((a, b) => a.view_order - b.view_order));
+/* ---------------- assemble rows ---------------- */
+const stagesSorted = computed(() =>
+    [...props.stages].sort((a, b) => {
+        const d = a.view_order - b.view_order;
+        if (d !== 0) return d;
+        return a.step_name.localeCompare(b.step_name);
+    })
+);
 
 function findProgress(step_id: string): StageProgress | undefined {
-    return props.progress.find((p) => p.step_id === step_id && p.project_id === props.project.project_id);
+    return props.progress.find(
+        (p) => p.step_id === step_id && p.project_id === props.project.project_id
+    );
 }
 
 function alterationsForStep(step_id: string): Alteration[] {
@@ -285,23 +283,16 @@ function milestoneInRange(ms: Milestone, start: ISODate, end: ISODate) {
 const rows = computed(() => {
     return stagesSorted.value.map((step) => {
         const prog = findProgress(step.step_id);
-
-        // baseline window comes from progress; fallback: project range
         const baselineStart = prog?.step_start_date ?? props.project.start_date;
         const baselineEnd = prog?.step_end_date ?? props.project.end_date;
 
         const alts = alterationsForStep(step.step_id);
 
-        // extension end: max of new_end_date/impact_end_date, but ALWAYS compared to baselineEnd
         let extensionEnd: ISODate | null = null;
         let bubbleAlteration: Alteration | null = null;
 
         for (const a of alts) {
-            const candidate =
-                a.new_end_date ??
-                a.impact_end_date ??
-                null;
-
+            const candidate = a.new_end_date ?? a.impact_end_date ?? null;
             if (!candidate) continue;
             if (!isAfter(candidate, baselineEnd)) continue;
 
@@ -313,8 +304,7 @@ const rows = computed(() => {
 
         const milestonesInRange = props.milestones
             .filter((m) => m.project_id === props.project.project_id)
-            .filter((m) => milestoneInRange(m, baselineStart, extensionEnd ?? baselineEnd))
-            .filter((m) => m.description.toLowerCase().includes("check") || m.milestone_type !== "intermediário" ? true : true); // você pode refinar depois
+            .filter((m) => milestoneInRange(m, baselineStart, extensionEnd ?? baselineEnd));
 
         const showChecked = props.config?.show_icons_checked ?? true;
 
@@ -336,37 +326,68 @@ const rows = computed(() => {
             baselineStart,
             baselineEnd,
             extensionEnd,
-            bubbleDate: extensionEnd, // bolha no fim da extensão
+            bubbleDate: extensionEnd,
             bubbleAlteration,
             milestonesInRange,
             statusIcon,
             statusTitle,
-            alterTitle: bubbleAlteration ? bubbleAlteration.description : "",
         };
     });
 });
 
-/* ---------- inauguration bar ---------- */
+/* ---------------- inaug row ---------------- */
 const inaugStart = computed(() => {
-    // barra curta antes da data de inauguração, para ficar parecida com a imagem
-    // (não é “verdade” do cronograma; é apenas visual)
     const end = parseISO(props.project.inauguration_date);
     const start = new Date(end);
     start.setDate(start.getDate() - 45);
     const iso = toISO(start);
-    // não deixa sair do domínio
     return parseISO(iso) < parseISO(domainStart.value) ? domainStart.value : iso;
 });
-
 const inaugEnd = computed(() => props.project.inauguration_date);
 
-/* ---------- events (plugar v-dialog depois) ---------- */
-function onMilestone(m: Milestone) {
-    // aqui você abre seu dialog e mostra m.description, etc.
-    // por enquanto, noop
-    console.log("milestone:", m);
+/* ---------------- tooltip ---------------- */
+const tip = reactive({
+    open: false,
+    x: 0,
+    y: 0,
+    title: "",
+    subtitle: "",
+});
+
+function showTip(row: any, ev: MouseEvent) {
+    tip.open = true;
+    tip.title = `${row.step.step_name} (${row.progress?.advance_percent ?? 0}%)`;
+    tip.subtitle = `Início: ${formatBR(row.baselineStart)} • Fim: ${formatBR(row.baselineEnd)}`;
+    moveTip(ev);
 }
 
+function showMilestoneTip(m: Milestone, ev: MouseEvent) {
+    tip.open = true;
+    tip.title = m.description;
+    tip.subtitle = `Data: ${formatBR(m.milestone_date)}`;
+    moveTip(ev);
+}
+
+function showInaugTip(ev: MouseEvent) {
+    tip.open = true;
+    tip.title = "Inauguração";
+    tip.subtitle = `Data: ${formatBR(props.project.inauguration_date)}`;
+    moveTip(ev);
+}
+
+function moveTip(ev: MouseEvent) {
+    tip.x = ev.clientX + 12;
+    tip.y = ev.clientY + 12;
+}
+
+function hideTip() {
+    tip.open = false;
+}
+
+/* ---------------- click handlers ---------------- */
+function onMilestone(m: Milestone) {
+    console.log("milestone:", m);
+}
 function onAlteration(a: Alteration | null) {
     if (!a) return;
     console.log("alteration:", a);
@@ -385,14 +406,6 @@ function onAlteration(a: Alteration | null) {
     justify-content: space-between;
     align-items: start;
     gap: 12px;
-}
-
-.gd-title {
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    color: #0b1b34;
-    font-size: 18px;
-    line-height: 1.2;
 }
 
 .gd-subtitle {
@@ -418,58 +431,40 @@ function onAlteration(a: Alteration | null) {
     overflow: hidden;
 }
 
-.gd-chart {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 12px;
-    align-items: start;
-    min-width: 0;
+/* scroll horizontal */
+.gd-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
 }
 
-.gd-left {
-    display: grid;
-    grid-template-rows: 34px auto;
-    gap: 0;
-}
-
-.gd-left-spacer {
-    height: 34px;
-}
-
-.gd-left-row {
-    display: flex;
-    align-items: center;
-    padding-right: 10px;
-}
-
-.gd-step-name {
-    font-size: 11px;
-    font-weight: 800;
-    color: #7483a0;
-    letter-spacing: 1px;
-    line-height: 1;
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-}
-
-.gd-step-name-text {
-    white-space: nowrap;
-}
-
-.gd-step-pct {
-    color: #8f9db5;
-    font-weight: 800;
-}
-
-.gd-right {
+.gd-canvas {
     position: relative;
-    min-width: 0;
-    overflow: hidden;
+    min-width: 1400px;
 }
 
+.gd-scroll::-webkit-scrollbar {
+    height: 10px;
+}
+
+.gd-scroll::-webkit-scrollbar-thumb {
+    background: rgba(150, 165, 195, 0.35);
+    border-radius: 999px;
+}
+
+.gd-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.gd-chart {
+    position: relative;
+}
+
+/* axis */
 .gd-axis {
     position: relative;
+    height: 26px;
+    margin-bottom: 10px;
 }
 
 .gd-axis-tick {
@@ -483,13 +478,16 @@ function onAlteration(a: Alteration | null) {
     font-weight: 800;
     color: #b0bdd2;
     letter-spacing: 0.8px;
+    user-select: none;
 }
 
+/* grid */
 .gd-grid {
     position: absolute;
-    inset: 34px 0 0 0;
-    /* abaixo do eixo */
+    inset: 26px 0 0 0;
+    /* começa abaixo do eixo */
     pointer-events: none;
+    z-index: 0;
 }
 
 .gd-grid-line {
@@ -497,13 +495,12 @@ function onAlteration(a: Alteration | null) {
     top: 0;
     bottom: 0;
     width: 0;
-    border-left: 1px dashed rgba(160, 175, 205, 0.25);
+    border-left: 1px dashed rgba(160, 175, 205, 0.18);
 }
 
 .gd-rows {
     position: relative;
-    margin-top: 0;
-    padding-top: 0;
+    z-index: 1;
 }
 
 .gd-row {
@@ -518,13 +515,55 @@ function onAlteration(a: Alteration | null) {
     height: 100%;
 }
 
-.gd-bar {
+/* label: contido e sempre legível */
+.gd-row-label {
     position: absolute;
-    top: 50%;
+    top: 8px;
+    transform: translateY(-100%);
+    display: inline-flex;
+    gap: 6px;
+    align-items: baseline;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.gd-row-label-name,
+.gd-row-label-pct {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 8px 24px rgba(20, 32, 56, 0.06);
+}
+
+.gd-row-label-name {
+    font-size: 11px;
+    font-weight: 900;
+    color: #6f7fa0;
+    letter-spacing: 1px;
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gd-row-label-pct {
+    font-size: 11px;
+    font-weight: 900;
+    color: #8f9db5;
+    white-space: nowrap;
+}
+
+/* bars */
+.gd-bar,
+.gd-extension {
+    position: absolute;
+    top: 62%;
     transform: translateY(-50%);
     height: 18px;
     border-radius: 999px;
     overflow: visible;
+    z-index: 2;
 }
 
 .gd-bar-progress {
@@ -534,11 +573,6 @@ function onAlteration(a: Alteration | null) {
 }
 
 .gd-extension {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 18px;
-    border-radius: 999px;
     opacity: 0.95;
 }
 
@@ -561,26 +595,25 @@ function onAlteration(a: Alteration | null) {
     line-height: 1;
 }
 
-.gd-chip {
+/* milestone marker (discreto) */
+.gd-ms {
     position: absolute;
-    top: 50%;
+    top: 62%;
     transform: translate(-50%, -50%);
-    font-size: 9px;
-    font-weight: 800;
-    padding: 3px 8px;
+    width: 10px;
+    height: 10px;
     border-radius: 999px;
-    border: 0;
-    background: rgba(255, 255, 255, 0.38);
-    color: rgba(255, 255, 255, 0.92);
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    background: rgba(15, 65, 190, 0.35);
     cursor: pointer;
-    white-space: nowrap;
+    z-index: 4;
 }
 
+/* bubble */
 .gd-bubble {
     position: absolute;
-    top: 50%;
+    top: 62%;
     transform: translate(10px, -50%);
-    /* “na ponta” do fim */
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -592,6 +625,7 @@ function onAlteration(a: Alteration | null) {
     font-weight: 900;
     cursor: pointer;
     white-space: nowrap;
+    z-index: 5;
 }
 
 .gd-bubble-date {
@@ -606,5 +640,31 @@ function onAlteration(a: Alteration | null) {
     place-items: center;
     background: rgba(255, 152, 0, 0.2);
     font-size: 11px;
+}
+
+/* tooltip */
+.gd-tooltip {
+    position: fixed;
+    z-index: 50;
+    min-width: 180px;
+    max-width: 320px;
+    background: #0b1b34;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+}
+
+.gd-tooltip-title {
+    font-weight: 900;
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+.gd-tooltip-sub {
+    margin-top: 4px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.75);
 }
 </style>

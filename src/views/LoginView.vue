@@ -89,7 +89,7 @@ async function onSubmit() {
 
     try {
         await login({ email: email.value, password: password.value });
-        router.replace({ name: "projetos" });
+        router.replace({ name: "projetos-mapa" });
     } catch (e: unknown) {
         if (axios.isAxiosError(e)) {
             const apiMsg =

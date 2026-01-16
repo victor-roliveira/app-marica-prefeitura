@@ -18,8 +18,8 @@ const routes = [
   },
 
   {
-    path: "/",
-    name: "projetos",
+    path: "/projetos-mapa",
+    name: "projetos-mapa",
     component: ProjectsView,
     meta: { requiresAuth: true },
   },
@@ -80,7 +80,7 @@ router.beforeEach((to) => {
   }
 
   if (isAuthenticated.value && to.name === "login") {
-    return { name: "projetos" }; 
+    return { name: "projetos-mapa" }; 
   }
 
   return true;

@@ -396,15 +396,22 @@ function formatDelayNumber(days: number) {
     }
 
     .pd-label {
-        font-size: 12px;
+        font-size: 10px;
+        margin-left: 40px;
     }
 
     .pd-value {
         font-size: 12px;
+        margin-left: 40px;
     }
 
     .pd-chev {
-        margin-left: 90px;
+        margin-left: 70px;
+        transition: ease-in-out 0.3s;
+    }
+
+    .pd-chev:hover {
+        scale: 1.6;
     }
 }
 </style>
