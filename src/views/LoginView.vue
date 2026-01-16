@@ -42,7 +42,7 @@
                                 <p v-if="error" class="error-message">{{ error }}</p>
                             </div>
 
-                            <v-btn class="submit" :disabled="loading" type="submit" block size="large" color="blue"
+                            <v-btn class="submit" :disabled="loading" type="submit" block size="large" color="red"
                                 rounded="lg" :loading="loading">
                                 {{ loading ? "Entrando..." : "Entrar" }}
                             </v-btn>
@@ -230,7 +230,7 @@ const gmailLink = computed(() => {
 
 .link {
     font-size: 12.5px;
-    color: #2b7bd8;
+    color: orangered;
     text-decoration: none;
     font-weight: 600;
 }
