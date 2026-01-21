@@ -135,13 +135,11 @@ const props = defineProps<{
     inaugurColor?: string;
 }>();
 
-/** Desktop limpo: altura fixa por linha para evitar sobreposição */
 const rowHeightPx = computed(() => 56);
 const inaugColor = computed(
     () => props.inaugurColor ?? props.config?.color_inauguration ?? "#0A2A66"
 );
 
-/* ---------------- dates ---------------- */
 function parseISO(d: ISODate): Date {
     const [y, m, day] = d.split("-").map((x) => Number(x));
     return new Date(y, (m ?? 1) - 1, day ?? 1);
@@ -175,7 +173,6 @@ function formatBR(d: ISODate): string {
     return `${dd}/${mm}`;
 }
 
-/* ---------------- timeline domain ---------------- */
 const domainStart = computed(() => {
     const dates: ISODate[] = [
         props.project.start_date,
@@ -220,7 +217,6 @@ function barStyle(start: ISODate, end: ISODate, color: string) {
     return { left: left + "%", width: width + "%", backgroundColor: color };
 }
 
-/* ---------------- canvas width (scroll) ---------------- */
 const domainDays = computed(() => {
     const a = parseISO(domainStart.value);
     const b = parseISO(domainEnd.value);
@@ -232,7 +228,6 @@ const canvasMinWidthPx = computed(() => {
     return Math.max(1400, base);
 });
 
-/* ---------------- month axis/grid ---------------- */
 const months = computed(() => {
     const start = parseISO(domainStart.value);
     const end = parseISO(domainEnd.value);
@@ -251,7 +246,6 @@ const months = computed(() => {
     return items;
 });
 
-/* ---------------- assemble rows ---------------- */
 const stagesSorted = computed(() =>
     [...props.stages].sort((a, b) => {
         const d = a.view_order - b.view_order;
@@ -336,7 +330,6 @@ const rows = computed(() => {
     });
 });
 
-/* ---------------- inaug row ---------------- */
 const inaugStart = computed(() => {
     const end = parseISO(props.project.inauguration_date);
     const start = new Date(end);
@@ -346,7 +339,6 @@ const inaugStart = computed(() => {
 });
 const inaugEnd = computed(() => props.project.inauguration_date);
 
-/* ---------------- tooltip ---------------- */
 const tip = reactive({
     open: false,
     x: 0,
@@ -385,7 +377,6 @@ function hideTip() {
     tip.open = false;
 }
 
-/* ---------------- click handlers ---------------- */
 function onMilestone(m: Milestone) {
     console.log("milestone:", m);
 }
@@ -440,7 +431,6 @@ function onAlteration(a: Alteration | null) {
     overflow: hidden;
 }
 
-/* scroll horizontal */
 .gd-scroll {
     overflow-x: auto;
     overflow-y: hidden;
@@ -469,7 +459,6 @@ function onAlteration(a: Alteration | null) {
     position: relative;
 }
 
-/* axis */
 .gd-axis {
     position: relative;
     height: 26px;
@@ -490,7 +479,6 @@ function onAlteration(a: Alteration | null) {
     user-select: none;
 }
 
-/* grid */
 .gd-grid {
     position: absolute;
     inset: 26px 0 0 0;
@@ -523,7 +511,6 @@ function onAlteration(a: Alteration | null) {
     height: 65%;
 }
 
-/* label */
 .gd-row-label {
     position: absolute;
     top: 8px;
@@ -603,7 +590,6 @@ function onAlteration(a: Alteration | null) {
     line-height: 1;
 }
 
-/* milestone marker */
 .gd-ms {
     position: absolute;
     top: 62%;
@@ -617,7 +603,6 @@ function onAlteration(a: Alteration | null) {
     z-index: 4;
 }
 
-/* bubble */
 .gd-bubble {
     position: absolute;
     top: 62%;
@@ -650,7 +635,6 @@ function onAlteration(a: Alteration | null) {
     font-size: 11px;
 }
 
-/* tooltip */
 .gd-tooltip {
     position: fixed;
     z-index: 50;

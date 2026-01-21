@@ -28,7 +28,6 @@
                 </v-btn>
             </div>
 
-            <!-- Linha 3: atualizado -->
             <div v-if="vm.updatedText" class="pd-updated">
                 <v-icon size="18">mdi-update</v-icon>
                 <span>{{ vm.updatedText }}</span>
@@ -172,7 +171,7 @@ const overallHealthClass = computed(() => {
     const v = props.vm.kpis.overallHealth;
     if (v === "Em Dia") return "pd-status-ok";
     if (v === "Em Risco") return "pd-status-risk";
-    return "pd-status-crit"; // Crítico
+    return "pd-status-crit"; 
 });
 
 function fmtDate(iso: string) {
@@ -363,7 +362,6 @@ function formatDelayNumber(days: number) {
     font-size: 14px;
 }
 
-/* cores dinâmicas da saúde */
 .pd-status-ok {
     color: #16a34a;
 }

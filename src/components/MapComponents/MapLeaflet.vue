@@ -51,18 +51,15 @@ import { LMap, LTileLayer, LMarker, LTooltip } from "@vue-leaflet/vue-leaflet";
 import "leaflet/dist/leaflet.css";
 import * as L from "leaflet";
 
-/* MAP CONFIG */
 const center = ref([-22.9194, -42.8182]);
 const zoom = ref(10);
 
 const tileLayer =
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
-/* STATE */
 const dialog = ref(false);
 const projetoSelecionado = ref(null);
 
-/* DATA */
 const projetos = ref([
     { id: 1, numero: 1, titulo: "Curva Di Branco", executor: "SOMAR", conclusao: "Agosto/2025", valor: "R$ 10.000.000,00", prazo: "12 meses", inicio: "Junho/2026", lat: -22.9390, lng: -42.8296 },
     { id: 2, numero: 2, titulo: "Câmara", executor: "...", conclusao: "...", valor: "...", prazo: "...", inicio: "...", lat: -22.9180, lng: -42.8136 },
@@ -74,7 +71,6 @@ const projetos = ref([
     { id: 8, numero: 8, titulo: "13° Batalhão de Polícia Militar", executor: "SOMAR", conclusao: "Julho/2025", valor: "R$ 10.000.000,00", prazo: "12 meses", inicio: "Julho/2026", lat: -22.9051, lng: -42.8094 },
 ]);
 
-/* METHODS */
 function getIcon(numero) {
     return L.divIcon({
         html: `<div class="marker-badge">${numero}</div>`,
@@ -92,7 +88,6 @@ function openProjeto(p) {
 
 
 <style scoped>
-/* BASE */
 .map-container {
     width: 100%;
     display: flex;
@@ -112,13 +107,11 @@ function openProjeto(p) {
     border-radius: 12px;
 }
 
-/* Leaflet */
 :deep(.leaflet-container) {
     width: 100%;
     height: 100%;
 }
 
-/* MARKER */
 :deep(.marker-badge) {
     width: 18px;
     height: 18px;
@@ -133,23 +126,15 @@ function openProjeto(p) {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
-/* =======================
-   MOBILE (FINAL E CORRETO)
-======================= */
 @media (max-width: 768px) {
-
-    /* reduz espaço do título acima do mapa */
     h1,
     h2 {
         margin-bottom: 8px;
     }
 
-    /* mapa quase fullscreen */
     .map-wrapper {
         height: calc(100vh - 96px);
-        /* header + título */
         padding: 0 0;
-        /* respiro lateral */
     }
 
     .map-responsive {
@@ -157,7 +142,6 @@ function openProjeto(p) {
     }
 }
 
-/* TYPO */
 .tooltip,
 .custom-marker,
 .v-card,

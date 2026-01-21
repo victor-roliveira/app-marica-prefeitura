@@ -51,7 +51,6 @@ function colorClass(k: ImpactColorKey) {
 }
 
 const segments = computed(() => {
-    // Distribui os arcos sequencialmente
     let accPct = 0;
 
     return props.items.map((it) => {
@@ -139,35 +138,22 @@ const segments = computed(() => {
     color: #0e1730;
 }
 
-/* =========================
-   CORES POR CATEGORIA
-   - Donut usa stroke
-   - Bolinha usa background
-   ========================= */
-
-/* Donut (stroke) */
 .seg.c-rev {
     stroke: #2563eb;
 }
 
-/* Revisão Proj. (azul) */
 .seg.c-amb {
     stroke: #ef4444;
 }
 
-/* Ambiental (vermelho) */
 .seg.c-des {
     stroke: #f97316;
 }
 
-/* Desapropriação (laranja) */
 .seg.c-log {
     stroke: #cbd5e1;
 }
 
-/* Logística (cinza) */
-
-/* Bolinhas (background) */
 .dot.c-rev {
     background: #2563eb;
 }

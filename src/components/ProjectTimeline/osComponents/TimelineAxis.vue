@@ -187,7 +187,6 @@ function emitSelectStepEnd(e: StepEnd) {
   border-radius: 2px;
 }
 
-/* ===== dots mode ===== */
 .ta-dot {
   position: absolute;
   left: 7px;
@@ -196,29 +195,21 @@ function emitSelectStepEnd(e: StepEnd) {
   cursor: pointer;
   background: #fff;
   border-radius: 999px;
-
-  /* VISUAL ORIGINAL (mantido) */
   border: 6px solid rgba(0, 0, 0, 0.35);
-
-  /* clique confiável */
   pointer-events: auto;
   touch-action: manipulation;
   z-index: 5;
-
-  /* remove estilos default mobile */
   -webkit-tap-highlight-color: transparent;
 }
 
-/* HIT AREA INVISÍVEL (NÃO muda o visual) */
 .ta-dot::after {
   content: "";
   position: absolute;
-  inset: -10px;     /* aumenta a área tocável */
+  inset: -10px;     
   border-radius: 999px;
   background: transparent;
 }
 
-/* tamanhos visuais originais */
 .ta-dot--milestone {
   width: 12px;
   height: 12px;
@@ -235,7 +226,6 @@ function emitSelectStepEnd(e: StepEnd) {
   border-color: rgba(0, 0, 0, 0.55);
 }
 
-/* ===== list mode ===== */
 .ta-btn {
   background: transparent;
   border: 0;

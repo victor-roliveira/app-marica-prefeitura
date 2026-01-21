@@ -27,7 +27,7 @@ export type ImpactCategory = {
 const props = defineProps<{
     data: ImpactCategory[];
     centerLabel?: string;
-    heightPx?: number; // <- novo
+    heightPx?: number; 
 }>();
 
 const heightPx = computed(() => props.heightPx ?? 220);

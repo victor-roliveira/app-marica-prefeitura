@@ -35,14 +35,6 @@
                     <MonthlyExecutionPaceChart :vm="vm.monthlyExecutionPace" />
                 </v-card-text>
             </v-card>
-
-            <!--<v-card class="card" rounded="xl" elevation="2">
-                <v-card-text class="card-body">
-                    <SectionTitle :title="vm.costVsProgress.title" />
-                    <CostVsProgressChart :vm="vm.costVsProgress" />
-                </v-card-text>
-            </v-card>-->
-
         </div>
     </div>
 </template>
@@ -57,11 +49,9 @@ import type { PhysicalProgressViewModel } from "../types";
 import PhysicalSummaryCard from "./PhysicalSummaryCard.vue";
 import SectionHeader from "./SectionHeader.vue";
 import SectionTitle from "./SectionTitle.vue";
-
 import MilestonesEvolutionChart from "./charts/MilestonesEvolutionChart.vue";
 import ProgressComparisonChart from "./charts/ProgressComparisonChart.vue";
 import MonthlyExecutionPaceChart from "./charts/MonthlyExecutionPaceChart.vue";
-import CostVsProgressChart from "./charts/CostVsProgressChart.vue";
 import { MacroStagesVm } from "../../helpers/macroTypes";
 import { macroStagesMock } from "../../helpers/macroMock";
 import MacroStagesCard from "../../macroStages/MacroStagesCard.vue";
@@ -106,7 +96,6 @@ function onBack() {
     color: #0e1730;
 }
 
-/* MOBILE (fica exatamente como já estava) */
 .content {
     padding: 14px 14px 20px;
     display: flex;
@@ -130,7 +119,6 @@ function onBack() {
     font-style: italic;
 }
 
-/* DESKTOP: 2 itens por linha */
 @media (min-width: 1024px) {
     .content {
         display: grid;
@@ -139,13 +127,11 @@ function onBack() {
         align-items: stretch;
     }
 
-    /* Os 2 primeiros itens (Summary e MacroStages) ocupam a linha inteira */
     .content > :nth-child(1),
     .content > :nth-child(2) {
         grid-column: 1 / -1;
     }
 
-    /* Mesma altura visual para os cards do grid */
     .card {
         height: 100%;
         display: flex;

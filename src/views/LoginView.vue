@@ -153,7 +153,6 @@ const gmailLink = computed(() => {
     gap: 10px;
 }
 
-/* Card principal */
 .login-card {
     flex: 1;
     display: flex;
@@ -198,7 +197,6 @@ const gmailLink = computed(() => {
     color: #63708a;
 }
 
-/* Form */
 .form {
     margin-top: 14px;
     display: flex;

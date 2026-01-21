@@ -11,7 +11,6 @@ defineProps<{ color: string }>();
 </script>
 
 <style scoped>
-/* wrapper garante que o topo/fundo batam com o eixo */
 .ti-wrap {
     height: 100%;
     display: flex;
@@ -20,7 +19,6 @@ defineProps<{ color: string }>();
 
 .ti-bar {
     width: 22px;
-    /* mais estreito (achatado) */
     height: 100%;
     border-radius: 2px;
     display: flex;

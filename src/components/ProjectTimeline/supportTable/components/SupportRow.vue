@@ -75,8 +75,6 @@ const stageClass = computed(() => (props.vm.situation === "Atrasado" ? "s-late" 
     color: #ef4444;
 }
 
-/* itens atrasados em vermelho, igual ao print */
-
 .chip {
     border-radius: 999px;
     font-weight: 900;
@@ -151,7 +149,6 @@ const stageClass = computed(() => (props.vm.situation === "Atrasado" ? "s-late" 
     color: #9aa6b6;
 }
 
-/* no print o % atrasado fica mais neutro */
 .p-prog {
     color: #0e1730;
 }

@@ -35,8 +35,6 @@ const props = defineProps<{
     progress: StageProgress[];
     config?: TimelineConfig;
     orientation?: "horizontal" | "vertical";
-
-    /** altura do painel no modo vertical (mobile) */
     heightPx?: number;
 }>();
 
@@ -59,9 +57,6 @@ const heightPx = computed(() => props.heightPx ?? 220);
 </script>
 
 <style scoped>
-/* =========================
-   HORIZONTAL (desktop)
-========================= */
 .tb-root-horizontal {
     display: flex;
     flex-direction: column;
@@ -87,9 +82,6 @@ const heightPx = computed(() => props.heightPx ?? 220);
     transition: width 0.25s ease;
 }
 
-/* =========================
-   VERTICAL (mobile)
-========================= */
 .tb-root-vertical {
     display: flex;
     align-items: flex-end;
@@ -112,10 +104,8 @@ const heightPx = computed(() => props.heightPx ?? 220);
     background: rgba(0, 0, 0, 0.12);
     border-radius: 2px;
     overflow: hidden;
-
     display: flex;
     align-items: flex-end;
-    /* fill sobe */
 }
 
 .tb-vbar-fill {

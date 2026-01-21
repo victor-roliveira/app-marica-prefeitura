@@ -70,7 +70,6 @@ function pct(v: number) {
     text-align: center;
 }
 
-/* Responsivo: compacta as colunas numéricas */
 @media (max-width: 520px) {
     .msr {
         grid-template-columns: 56px 1fr 70px 56px 78px;

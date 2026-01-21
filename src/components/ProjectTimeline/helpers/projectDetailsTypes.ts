@@ -48,7 +48,7 @@ export interface ProjectDetailsViewModel {
   kpis: ProjectDetailsKpis;
 }
 
-/** ====== OS (Objeto da OS) ====== */
+/* OS (Objeto da OS) */
 export type OsStatus = "Ativa" | "Inativa" | "Encerrada";
 export type ContractMilestoneStatus = "OK" | "Em atraso" | "Atenção";
 

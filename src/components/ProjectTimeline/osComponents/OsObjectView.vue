@@ -157,31 +157,23 @@ function badgeClass(status: string) {
 
 <style scoped>
 .os-wrap {
-    /* MUDANÇA: De flex para grid para facilitar o layout 2D */
     display: grid;
-    grid-template-columns: 1fr; /* Padrão mobile: 1 coluna */
+    grid-template-columns: 1fr;
     gap: 14px;
     padding: 6px 0 10px;
     font-family: "Montserrat";
 }
 
-/* --- REGRAS PARA DESKTOP --- */
 @media (min-width: 960px) {
     .os-wrap {
-        /* Define 2 colunas iguais */
         grid-template-columns: 1fr 1fr;
-        /* Alinha os itens no topo (para cards de alturas diferentes não esticarem) */
         align-items: start;
     }
 
-    /* O Cabeçalho e o Alerta devem sempre ocupar a largura total (as 2 colunas) */
     .os-top,
     .v-alert {
         grid-column: 1 / -1;
     }
-    
-    /* Opcional: Se quiser que o primeiro card (Resumo da OS) seja full width também, descomente abaixo: */
-    /* .os-card:first-of-type { grid-column: 1 / -1; } */
 }
 
 .os-top {
@@ -190,7 +182,6 @@ function badgeClass(status: string) {
     align-items: center;
     gap: 10px;
     padding: 4px 2px;
-    /* Nota: Removi a largura fixa, o grid cuida disso */
 }
 
 .os-back {
@@ -219,9 +210,8 @@ function badgeClass(status: string) {
     border: 1px solid #eef2f6;
     box-shadow: 0 1px 0 rgba(12, 16, 24, .06), 0 8px 18px rgba(12, 16, 24, .05);
     padding: 14px;
-    /* Garante que o card preencha a célula do grid */
     width: 100%; 
-    height: 100%; /* Opcional: faz cards na mesma linha terem mesma altura visual se remover o align-items: start */
+    height: 100%; 
 }
 
 .os-card-title {

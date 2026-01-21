@@ -24,7 +24,7 @@ export default createVuetify({
         themes: {
             light: {
                 colors: {
-                    primary: '#ff5a26', // laranja próximo da Quanta
+                    primary: '#ff5a26', 
                 },
             },
         },

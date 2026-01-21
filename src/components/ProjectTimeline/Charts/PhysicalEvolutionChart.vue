@@ -10,9 +10,9 @@ import { computed } from "vue";
 import VChart from "vue-echarts";
 
 export type PhysicalEvolutionPoint = {
-    label: string;      // "Jan"
-    projected: number;  // 0..100
-    executed: number;   // 0..100
+    label: string;      
+    projected: number;  
+    executed: number;   
 };
 
 const props = defineProps<{
@@ -92,7 +92,7 @@ const option = computed(() => {
             {
                 name: projectedName,
                 type: "line",
-                data: projected.value,          // ✅ NÃO some
+                data: projected.value,          
                 smooth: true,
                 symbol: "circle",
                 symbolSize: isCompact.value ? 4 : 6,
@@ -104,7 +104,7 @@ const option = computed(() => {
             {
                 name: executedName,
                 type: "bar",
-                data: executed.value,           // ✅ NÃO some
+                data: executed.value,           
                 barWidth: isCompact.value ? 22 : 42,
                 itemStyle: {
                     color: "rgba(79,70,229,.85)",
