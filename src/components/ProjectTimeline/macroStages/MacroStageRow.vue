@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { MacroStageItem } from "../helpers/macroTypes";
-import ProgressRing from "./progressRing.vue";
+import ProgressRing from "./ProgressRing.vue";
 import StatusBadge from "./StatusBadge.vue";
 
 defineProps<{ item: MacroStageItem }>();
