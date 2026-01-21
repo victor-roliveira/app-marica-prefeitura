@@ -10,6 +10,8 @@
         <div class="content">
             <PhysicalSummaryCard :vm="vm.summary" />
 
+            <MacroStagesCard :vm="macroStagesVm" />
+
             <v-card class="card" rounded="xl" elevation="2">
                 <v-card-text class="card-body">
                     <SectionHeader :title="vm.milestonesEvolution.title"
@@ -34,12 +36,13 @@
                 </v-card-text>
             </v-card>
 
-            <v-card class="card" rounded="xl" elevation="2">
+            <!--<v-card class="card" rounded="xl" elevation="2">
                 <v-card-text class="card-body">
                     <SectionTitle :title="vm.costVsProgress.title" />
                     <CostVsProgressChart :vm="vm.costVsProgress" />
                 </v-card-text>
-            </v-card>
+            </v-card>-->
+
         </div>
     </div>
 </template>
@@ -59,6 +62,9 @@ import MilestonesEvolutionChart from "./charts/MilestonesEvolutionChart.vue";
 import ProgressComparisonChart from "./charts/ProgressComparisonChart.vue";
 import MonthlyExecutionPaceChart from "./charts/MonthlyExecutionPaceChart.vue";
 import CostVsProgressChart from "./charts/CostVsProgressChart.vue";
+import { MacroStagesVm } from "../../helpers/macroTypes";
+import { macroStagesMock } from "../../helpers/macroMock";
+import MacroStagesCard from "../../macroStages/MacroStagesCard.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -67,6 +73,10 @@ const projectId = computed(() => String(route.params.projectId ?? ""));
 
 const vm = computed<PhysicalProgressViewModel>(() => {
     return physicalProgressMockByProjectId[projectId.value] ?? physicalProgressFallbackMock;
+});
+
+const macroStagesVm = computed<MacroStagesVm>(() => {
+    return macroStagesMock;
 });
 
 function onBack() {
@@ -96,6 +106,7 @@ function onBack() {
     color: #0e1730;
 }
 
+/* MOBILE (fica exatamente como já estava) */
 .content {
     padding: 14px 14px 20px;
     display: flex;
@@ -117,5 +128,33 @@ function onBack() {
     color: #93a1b4;
     line-height: 1.45;
     font-style: italic;
+}
+
+/* DESKTOP: 2 itens por linha */
+@media (min-width: 1024px) {
+    .content {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        align-items: stretch;
+    }
+
+    /* Os 2 primeiros itens (Summary e MacroStages) ocupam a linha inteira */
+    .content > :nth-child(1),
+    .content > :nth-child(2) {
+        grid-column: 1 / -1;
+    }
+
+    /* Mesma altura visual para os cards do grid */
+    .card {
+        height: 100%;
+        display: flex;
+    }
+
+    .card-body {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
 }
 </style>

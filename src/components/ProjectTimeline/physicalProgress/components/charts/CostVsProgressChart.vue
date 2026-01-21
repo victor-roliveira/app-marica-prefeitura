@@ -17,7 +17,6 @@ echarts.use([LineChart, GridComponent, TooltipComponent, LegendComponent, Canvas
 const props = defineProps<{ vm: CostVsPhysicalProgressVm }>();
 
 function fmtMoneyM(v: number, unit: string) {
-    // v em milhões
     return `${unit}${v.toFixed(1)}M`;
 }
 

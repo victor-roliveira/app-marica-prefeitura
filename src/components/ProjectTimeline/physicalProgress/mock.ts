@@ -11,7 +11,7 @@ export const physicalProgressFallbackMock: PhysicalProgressViewModel = {
         message: "O avanço físico real para o projeto Batalhão encontra-se abaixo do planejado para este período.",
     },
     milestonesEvolution: {
-        title: "Evolução de Marcos",
+        title: "Evolução do Escopo",
         deltaLabelRight: "DESVIO ACUMULADO",
         deltaValue: "-17%",
         deltaTone: "risk",
@@ -21,7 +21,7 @@ export const physicalProgressFallbackMock: PhysicalProgressViewModel = {
         actualScatter: [12, 24, 38, 52, 70],
     },
     progressComparison: {
-        title: "COMPARATIVO DE AVANÇO",
+        title: "Ritmo de Avanço Mensal",
         months: ["Jan", "Fev", "Mar", "Abr", "Mai"],
         planned: [12, 25, 45, 70, 90],
         replanned: [10, 24, 42, 60, 78],
@@ -30,13 +30,13 @@ export const physicalProgressFallbackMock: PhysicalProgressViewModel = {
             "O objetivo deste gráfico é mostrar como o avanço na obra é realmente comparado ao planejamento inicial e o replanejado.",
     },
     monthlyExecutionPace: {
-        title: "Ritmo de Execução Mensal",
+        title: "Ritmo de Avanço Mensal",
         months: ["Jan", "Fev", "Mar", "Abr", "Mai"],
         planned: [12, 25, 45, 65, 85],
         actual: [10, 24, 38, 52, 70],
     },
     costVsProgress: {
-        title: "Custo x Avanço Físico",
+        title: "Matriz de Impacto de Interferências por Etapa",
         months: ["Jan", "Fev", "Mar", "Abr", "Mai"],
         progressActual: [10, 25, 40, 55, 70],
         costActualM: [0.2, 0.4, 0.8, 1.2, 1.5],

@@ -21,7 +21,6 @@ const { screenData, setActiveProjectId } = useActiveProject();
 
 const projectId = computed(() => String(route.params.projectId || ""));
 
-// sincroniza o estado global com a rota
 watch(
   projectId,
   (id) => {
