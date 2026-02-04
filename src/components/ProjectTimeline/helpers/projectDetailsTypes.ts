@@ -4,6 +4,12 @@ import type { ISODate } from "./types";
 /** ====== Saúde / KPIs ====== */
 export type HealthStatus = "Em Dia" | "Em Risco" | "Crítico";
 
+const statusMap: Record<string, HealthStatus> = {
+  "No prazo": "Em Dia",
+  "Atrasada": "Crítico",
+  "Atenção": "Em Risco" 
+};
+
 export interface ProjectDetailsHeaderChip {
   icon?: string;
   label: string;

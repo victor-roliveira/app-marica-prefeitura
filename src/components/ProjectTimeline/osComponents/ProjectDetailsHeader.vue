@@ -1,5 +1,5 @@
 <template>
-    <div class="pd-wrap">
+    <div class="pd-wrap" v-if="vm">
         <!-- HEADER -->
         <div class="pd-header">
             <!-- Linha 1: Título + Relatório -->

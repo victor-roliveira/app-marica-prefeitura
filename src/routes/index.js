@@ -10,6 +10,12 @@ import LoginView from "../views/LoginView.vue";
 import { useAuth } from "../composables/useAuth";
 
 const routes = [
+  // 1. ADICIONADO: Redirecionamento da raiz para Login
+  {
+    path: "/",
+    redirect: "/login"
+  },
+
   {
     path: "/login",
     name: "login",
@@ -38,6 +44,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
 
+  // Rotas de Detalhes (KPIs)
   {
     path: "/projetos/:projectId/analise-entrega",
     name: "project-delivery-analysis",
@@ -62,6 +69,12 @@ const routes = [
     component: SupportTableView,
     meta: { requiresAuth: true },
   },
+  
+  // 2. ADICIONADO: Captura rotas inexistentes (404) e manda pro início
+  { 
+    path: '/:pathMatch(.*)*', 
+    redirect: '/projetos-mapa' 
+  }
 ];
 
 const router = createRouter({
@@ -69,21 +82,27 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to) => {
+router.beforeEach((to, from, next) => {
   const { isAuthenticated, loadSession } = useAuth();
+  
+  // Garante que a sessão está carregada antes de verificar
   loadSession();
 
   const isPublic = Boolean(to.meta.public);
+  const isUserLogged = isAuthenticated.value;
 
-  if (!isAuthenticated.value && !isPublic) {
-    return { name: "login" };
+  // Cenário 1: Usuário não logado tenta acessar rota privada -> Login
+  if (!isUserLogged && !isPublic) {
+    return next({ name: "login" });
   }
 
-  if (isAuthenticated.value && to.name === "login") {
-    return { name: "projetos-mapa" }; 
+  // Cenário 2: Usuário logado tenta acessar Login -> Home
+  if (isUserLogged && to.name === "login") {
+    return next({ name: "projetos-mapa" });
   }
 
-  return true;
+  // Segue o fluxo normal
+  next();
 });
 
 export default router;

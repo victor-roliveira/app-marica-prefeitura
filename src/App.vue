@@ -9,8 +9,8 @@
           <v-col cols="10" md="4" class="d-flex align-center justify-start justify-md-center pl-4 pl-md-0">
             <div v-if="!isHome" :style="isMobile ? 'width: 100%' : 'width: 100%; max-width: 400px;'">
               <v-select class="project-select" :class="isMobile ? 'text-left' : 'text-center'" v-model="activeProjectId"
-                :items="options" item-title="label" item-value="id" hide-details density="compact" variant="underlined"
-                @update:model-value="onSelectProject" placeholder="Selecione uma obra">
+                :items="options" :loading="isLoading" item-title="label" item-value="id" hide-details density="compact"
+                variant="underlined" @update:model-value="onSelectProject" placeholder="Selecione uma obra">
                 <template #selection="{ item }">
                   <span class="project-select-text text-white text-truncate font-weight-bold">
                     {{ item.raw.label }}
@@ -18,7 +18,7 @@
                 </template>
 
                 <template #item="{ props, item }">
-                  <v-list-item v-bind="props" :title="item.raw.label" :subtitle="item.raw.subtitle" />
+                  <v-list-item v-bind="props" :title="item.raw.label" :subtitle="item.raw.id" />
                 </template>
               </v-select>
             </div>
@@ -71,13 +71,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue"; // <--- 1. Adicionado onMounted
 import { useRoute, useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
 import { useActiveProject } from "./composables/useActiveProject";
 import { useAuth } from "./composables/useAuth";
 
-const { activeProjectId, options, setActiveProject } = useActiveProject();
+// <--- 2. Adicionado loadProjects e isLoading
+const { activeProjectId, options, setActiveProject, loadProjects, isLoading } = useActiveProject();
 
 const route = useRoute();
 const router = useRouter();
@@ -88,6 +89,11 @@ const isMobile = computed(() => mobile.value);
 const isHome = computed(() => route.path === "/login" || route.path === "/projetos-mapa")
 
 const { logout } = useAuth()
+
+// <--- 3. O GATILHO MÁGICO
+onMounted(() => {
+  loadProjects();
+});
 
 function handleLogout() {
   logout()
@@ -125,7 +131,12 @@ function goTo(path: string) {
 }
 
 function goToAcompanhamento() {
-  const id = String(activeProjectId.value || options[0]?.id || "BAT01");
+  // Se não tiver options carregado ainda, não navegue ou use um ID válido se souber
+  if (options.value.length === 0) {
+      // Opcional: Mostrar alerta ou esperar
+      return; 
+  }
+  const id = String(activeProjectId.value || options.value[0]?.id);
   const target = acompanhamentoPathFor(id);
   if (route.path !== target) router.push(target);
 }

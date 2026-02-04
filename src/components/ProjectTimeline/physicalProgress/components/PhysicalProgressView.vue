@@ -4,19 +4,25 @@
             <v-btn icon variant="text" @click="onBack">
                 <v-icon>mdi-arrow-left</v-icon>
             </v-btn>
-            <div class="topbar-title">{{ vm.header.title }}</div>
+            <div class="topbar-title">{{ vm?.header.title }}</div>
         </div>
 
-        <div class="content">
+        <div v-if="isLoading || !vm" class="d-flex justify-center align-center h-100 mt-10">
+            <v-progress-circular indeterminate color="primary" size="40" />
+        </div>
+
+        <div v-else class="content">
+            
             <PhysicalSummaryCard :vm="vm.summary" />
 
-            <MacroStagesCard :vm="macroStagesVm" />
+            <MacroStagesCard v-if="macroStagesVm" :vm="macroStagesVm" />
 
             <v-card class="card" rounded="xl" elevation="2">
                 <v-card-text class="card-body">
                     <SectionHeader :title="vm.milestonesEvolution.title"
                         :rightLabel="vm.milestonesEvolution.deltaLabelRight"
-                        :rightValue="vm.milestonesEvolution.deltaValue" :rightTone="vm.milestonesEvolution.deltaTone" />
+                        :rightValue="vm.milestonesEvolution.deltaValue" 
+                        :rightTone="vm.milestonesEvolution.deltaTone" />
                     <MilestonesEvolutionChart :vm="vm.milestonesEvolution" />
                 </v-card-text>
             </v-card>
@@ -41,32 +47,35 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
-import { physicalProgressMockByProjectId, physicalProgressFallbackMock } from "../mock";
+// === MUDANÇA 1: Usar o Composable Global ===
+import { useActiveProject } from "../../../../composables/useActiveProject"; 
+
+// Types (ajuste os caminhos conforme sua pasta)
 import type { PhysicalProgressViewModel } from "../types";
+import type { MacroStagesVm } from "../../helpers/macroTypes"; // Use o tipo global correto
 
+// Componentes
 import PhysicalSummaryCard from "./PhysicalSummaryCard.vue";
 import SectionHeader from "./SectionHeader.vue";
 import SectionTitle from "./SectionTitle.vue";
 import MilestonesEvolutionChart from "./charts/MilestonesEvolutionChart.vue";
 import ProgressComparisonChart from "./charts/ProgressComparisonChart.vue";
 import MonthlyExecutionPaceChart from "./charts/MonthlyExecutionPaceChart.vue";
-import { MacroStagesVm } from "../../helpers/macroTypes";
-import { macroStagesMock } from "../../helpers/macroMock";
 import MacroStagesCard from "../../macroStages/MacroStagesCard.vue";
 
-const route = useRoute();
 const router = useRouter();
 
-const projectId = computed(() => String(route.params.projectId ?? ""));
+// === MUDANÇA 2: Consumir dados reais ===
+const { screenData, isLoading } = useActiveProject();
 
-const vm = computed<PhysicalProgressViewModel>(() => {
-    return physicalProgressMockByProjectId[projectId.value] ?? physicalProgressFallbackMock;
+const vm = computed<PhysicalProgressViewModel | undefined>(() => {
+    return screenData.value?.physicalProgress;
 });
 
-const macroStagesVm = computed<MacroStagesVm>(() => {
-    return macroStagesMock;
+const macroStagesVm = computed<MacroStagesVm | undefined>(() => {
+    return screenData.value?.macro;
 });
 
 function onBack() {
@@ -75,9 +84,10 @@ function onBack() {
 </script>
 
 <style scoped>
+/* Mantendo seus estilos originais */
 .page {
     background: #f3f6fb;
-    min-height: 100%;
+    min-height: 100vh; /* Ajuste para cobrir a tela */
     font-family: "Montserrat";
 }
 

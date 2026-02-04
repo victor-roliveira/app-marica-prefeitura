@@ -5,18 +5,27 @@
                 <v-icon>mdi-arrow-left</v-icon>
             </v-btn>
 
-            <div class="topbar-title">{{ vm.headerTitle }}</div>
+            <div class="topbar-title">{{ vm?.headerTitle }}</div>
 
             <div />
         </div>
 
-        <div class="content">
+        <div v-if="isLoading || !vm" class="d-flex justify-center align-center h-100 mt-10">
+            <v-progress-circular indeterminate color="primary" size="40" />
+        </div>
+
+        <div v-else class="content">
             <SupportTabs v-model="tab" :vm="vm.tabs" />
 
             <v-card class="card" rounded="xl" elevation="2">
                 <v-card-text class="card-body">
                     <TableHeader :vm="vm.columns" />
+                    
                     <div class="rows">
+                        <div v-if="filteredRows.length === 0" class="pa-6 text-center text-grey text-caption">
+                            Nenhum item encontrado neste filtro.
+                        </div>
+
                         <SupportRow v-for="(r, idx) in filteredRows" :key="idx" :vm="r" />
                     </div>
                 </v-card-text>
@@ -27,32 +36,39 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
+// === MUDANÇA 1: Importar Composable e Types ===
+import { useActiveProject } from "../../../../composables/useActiveProject"; 
 import type { SupportTableViewModel, SupportTabKey } from "../types";
-import { supportTableFallbackMock, supportTableMockByProjectId } from "../mock";
+
+// (Removemos os Mocks aqui)
 
 import SupportTabs from "./SupportTabs.vue";
 import TableHeader from "./TableHeader.vue";
 import SupportRow from "./SupportRow.vue";
 
-const route = useRoute();
 const router = useRouter();
 
-const projectId = computed(() => String(route.params.projectId ?? ""));
+// === MUDANÇA 2: Consumir dados globais ===
+const { screenData, isLoading } = useActiveProject();
 
-const vm = computed<SupportTableViewModel>(() => {
-    return supportTableMockByProjectId[projectId.value] ?? supportTableFallbackMock;
+const vm = computed<SupportTableViewModel | undefined>(() => {
+    return screenData.value?.supportTable;
 });
 
 const tab = ref<SupportTabKey>("all");
 
 const filteredRows = computed(() => {
+    // Proteção: Se vm ainda não carregou, retorna array vazio
+    if (!vm.value) return [];
+
     const rows = vm.value.rows;
 
     if (tab.value === "all") return rows;
     if (tab.value === "late") return rows.filter((r) => r.situation === "Atrasado");
     if (tab.value === "done") return rows.filter((r) => r.situation === "Concluída");
+    // "progress"
     return rows.filter((r) => r.situation === "Em Andamento");
 });
 
@@ -62,9 +78,10 @@ function onBack() {
 </script>
 
 <style scoped>
+/* Seus estilos originais mantidos */
 .page {
     background: #f3f6fb;
-    min-height: 100%;
+    min-height: 100vh; /* Ajustado para cobrir a tela toda */
     font-family: "Montserrat";
 }
 

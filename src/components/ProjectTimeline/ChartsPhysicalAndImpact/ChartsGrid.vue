@@ -1,4 +1,3 @@
-<!-- src/components/dashboard/DashboardChartsRow.vue -->
 <template>
     <div class="row">
         <ChartCard title="Evolução Física" subtitle="Comparativo Planejado vs Real">
