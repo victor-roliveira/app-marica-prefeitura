@@ -140,8 +140,16 @@ const inaugColor = computed(
     () => props.inaugurColor ?? props.config?.color_inauguration ?? "#0A2A66"
 );
 
+// Encontre esta função
 function parseISO(d: ISODate): Date {
-    const [y, m, day] = d.split("-").map((x) => Number(x));
+    // PROTEÇÃO ADICIONADA: Se vier vazio ou undefined, retorna data atual para não quebrar
+    if (!d) return new Date(); 
+    
+    const parts = d.split("-");
+    // Se o formato não for YYYY-MM-DD (ex: veio "2025/10/10" ou lixo), protege também
+    if (parts.length < 3) return new Date();
+
+    const [y, m, day] = parts.map((x) => Number(x));
     return new Date(y, (m ?? 1) - 1, day ?? 1);
 }
 function toISO(d: Date): ISODate {

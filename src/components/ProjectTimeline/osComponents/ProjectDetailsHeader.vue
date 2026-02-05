@@ -1,10 +1,13 @@
 <template>
-    <div class="pd-wrap">
+    <div class="pd-wrap" v-if="vm">
         <!-- HEADER -->
         <div class="pd-header">
             <!-- Linha 1: Título + Relatório -->
             <div class="pd-row1">
-                <h1 class="pd-title">{{ vm.title }}</h1>
+                <div class="d-flex flex-column">
+                    <h1 class="pd-title">{{ vm.title }}</h1>
+                    <div class="pd-subtitle">{{ vm.subtitle }}</div>
+                </div>
 
                 <v-btn v-if="hasReportAction" class="pd-report-btn" rounded="xl" size="small" variant="flat"
                     @click="handleReport()">
@@ -212,6 +215,16 @@ function formatDelayNumber(days: number) {
     margin: 0;
     line-height: 1.1;
     color: #0b1220;
+}
+
+.pd-subtitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b; 
+    margin-top: -4px; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding-top: 5px;
 }
 
 .pd-row1,
