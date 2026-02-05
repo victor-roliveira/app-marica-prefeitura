@@ -6,7 +6,7 @@
             <div class="pd-row1">
                 <div class="d-flex flex-column">
                     <h1 class="pd-title">{{ vm.title }}</h1>
-                    <div class="pd-subtitle">{{ vm.subtitle }}</div>
+                    <div class="pd-subtitle">📋 {{ vm.subtitle }}</div> 
                 </div>
 
                 <v-btn v-if="hasReportAction" class="pd-report-btn" rounded="xl" size="small" variant="flat"
