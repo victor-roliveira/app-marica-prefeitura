@@ -46,6 +46,7 @@ export interface ProjectDetailsKpis {
 
 export interface ProjectDetailsViewModel {
   title: string;
+  subtitle: string;
   updatedText?: string;
   updatedAt?: ISODate;
 

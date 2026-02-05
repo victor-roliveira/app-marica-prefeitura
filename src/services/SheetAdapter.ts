@@ -323,6 +323,7 @@ export function parseSheetData(rows: RawSheetRow[]) {
 
     const detailsVm: ProjectDetailsViewModel = {
       title: headerRow["Nome da OS"],
+      subtitle: headerRow["Autarquia Demandante"] || "... dado em falta",
       updatedAt: cleanDate(headerRow["Última Atualização"]),
       kpis: {
         expectedDelivery: inauguration,
